@@ -5,25 +5,23 @@ require_relative 'shells/factory'
 
 module Mnenv
   class ShimManager
-    SHIMS_DIR = File.expand_path('~/.mnenv/shims').freeze
-    VERSIONS_DIR = File.expand_path('~/.mnenv/versions').freeze
     RESOLVER_SCRIPT = File.expand_path('resolver', __dir__).freeze
-    LIB_DIR = File.expand_path('~/.mnenv/lib/mnenv').freeze
 
-    attr_reader :shims_dir
+    attr_reader :shims_dir, :installed_dir
 
-    def initialize(shims_dir: nil)
-      @shims_dir = shims_dir || SHIMS_DIR
+    def initialize(shims_dir: nil, installed_dir: nil)
+      @shims_dir = shims_dir || Paths::SHIMS_DIR
+      @installed_dir = installed_dir || Paths::INSTALLED_DIR
     end
 
     def regenerate_all
       FileUtils.mkdir_p(@shims_dir)
-      FileUtils.mkdir_p(LIB_DIR)
+      FileUtils.mkdir_p(Paths::LIB_DIR)
 
       # Copy resolver script to mnenv lib directory (for Unix shells)
       if File.exist?(RESOLVER_SCRIPT)
-        FileUtils.cp(RESOLVER_SCRIPT, File.join(LIB_DIR, 'resolver'))
-        File.chmod(0o755, File.join(LIB_DIR, 'resolver'))
+        FileUtils.cp(RESOLVER_SCRIPT, File.join(Paths::LIB_DIR, 'resolver'))
+        File.chmod(0o755, File.join(Paths::LIB_DIR, 'resolver'))
       end
 
       executables = discover_executables
@@ -58,7 +56,7 @@ module Mnenv
       executables = Set.new
 
       # Discover from gemfile installations (binstubs in bin/)
-      bin_pattern = File.join(VERSIONS_DIR, '*', 'bin', '*')
+      bin_pattern = File.join(@installed_dir, '*', 'bin', '*')
       Dir.glob(bin_pattern).each do |bin_path|
         next if File.directory?(bin_path)
 
@@ -78,8 +76,8 @@ module Mnenv
       # Discover from binary installations (single metanorma binary)
       # On Windows, look for .exe files
       binary_patterns = [
-        File.join(VERSIONS_DIR, '*', 'metanorma'),
-        File.join(VERSIONS_DIR, '*', 'metanorma.exe')
+        File.join(@installed_dir, '*', 'metanorma'),
+        File.join(@installed_dir, '*', 'metanorma.exe')
       ]
 
       binary_patterns.each do |pattern|

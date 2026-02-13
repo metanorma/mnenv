@@ -40,14 +40,13 @@ module Mnenv
         all_versions[v.version][:binary_obj] = v
       end
 
-      # Check what's installed
-      versions_dir = File.expand_path('~/.mnenv/versions')
-      if Dir.exist?(versions_dir)
-        Dir.glob("#{versions_dir}/*/").each do |dir|
+      # Check what's installed (from installed directory, not versions data)
+      if Dir.exist?(Paths::INSTALLED_DIR)
+        Dir.glob("#{Paths::INSTALLED_DIR}/*/").each do |dir|
           version = File.basename(dir)
           source_file = File.join(dir, 'source')
-          source = File.exist?(source_file) ? File.read(source_file).strip : 'unknown'
-          all_versions[version][:"installed_#{source}"] = true if all_versions[version]
+          source = File.exist?(source_file) ? File.read(source_file).strip : nil
+          all_versions[version][:"installed_#{source}"] = true if source && all_versions[version]
         end
       end
 
@@ -136,8 +135,7 @@ module Mnenv
 
         # Check global version
         version ||= begin
-          global_version_file = File.expand_path('~/.mnenv/version')
-          File.read(global_version_file).strip if File.exist?(global_version_file)
+          File.read(Paths::VERSION_FILE).strip if File.exist?(Paths::VERSION_FILE)
         end
       end
 
@@ -156,8 +154,7 @@ module Mnenv
 
         # Check global source
         source ||= begin
-          global_source_file = File.expand_path('~/.mnenv/source')
-          File.read(global_source_file).strip if File.exist?(global_source_file)
+          File.read(Paths::SOURCE_FILE).strip if File.exist?(Paths::SOURCE_FILE)
         end
       end
 
@@ -178,10 +175,11 @@ module Mnenv
 
       # Then, select version
       choices = repo.all.sort.map do |v|
-        installed = Dir.exist?(File.expand_path("~/.mnenv/versions/#{v.version}"))
+        version_dir = Paths.version_install_dir(v.version)
+        installed = Dir.exist?(version_dir) && File.exist?(File.join(version_dir, 'source'))
         installed_source = if installed
-                             source_file = File.expand_path("~/.mnenv/versions/#{v.version}/source")
-                             File.exist?(source_file) ? "(#{File.read(source_file).strip})" : ''
+                             src = File.read(File.join(version_dir, 'source')).strip
+                             src.empty? ? '' : "(#{src})"
                            else
                              ''
                            end

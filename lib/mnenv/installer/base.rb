@@ -22,13 +22,13 @@ module Mnenv
     end
 
     def installed?
-      Dir.exist?(version_dir)
+      Dir.exist?(version_dir) && File.exist?(File.join(version_dir, 'source'))
     end
 
     private
 
     def default_target_dir
-      @default_target_dir ||= File.expand_path("~/.mnenv/versions/#{version}")
+      @default_target_dir ||= Paths.version_install_dir(version)
     end
 
     def version_dir
@@ -57,9 +57,8 @@ module Mnenv
 
     def default_source
       # Try to read from ~/.mnenv/source, else default to gemfile
-      global_source_file = File.expand_path('~/.mnenv/source')
-      if File.exist?(global_source_file)
-        File.read(global_source_file).strip
+      if File.exist?(Paths::SOURCE_FILE)
+        File.read(Paths::SOURCE_FILE).strip
       else
         'gemfile' # Default: faster for devs
       end

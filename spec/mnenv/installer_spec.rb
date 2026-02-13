@@ -23,7 +23,7 @@ RSpec.describe Mnenv::Installer do
 
     it 'uses default target dir when none provided' do
       installer = described_class.new(version, source: source)
-      expected_dir = File.expand_path("~/.mnenv/versions/#{version}")
+      expected_dir = Mnenv::Paths.version_install_dir(version)
       expect(installer.instance_variable_get(:@target_dir)).to eq(expected_dir)
     end
   end
@@ -35,14 +35,20 @@ RSpec.describe Mnenv::Installer do
   end
 
   describe '#installed?' do
-    it 'returns true when version directory exists' do
+    it 'returns true when version directory exists with source file' do
       FileUtils.mkdir_p(target_dir)
+      File.write(File.join(target_dir, 'source'), source)
       expect(installer.installed?).to be true
     end
 
     it 'returns false when version directory does not exist' do
       non_existent_dir = File.join(Dir.tmpdir, 'mnenv-test-nonexistent')
       installer = described_class.new(version, source: source, target_dir: non_existent_dir)
+      expect(installer.installed?).to be false
+    end
+
+    it 'returns false when source file does not exist' do
+      FileUtils.mkdir_p(target_dir)
       expect(installer.installed?).to be false
     end
   end

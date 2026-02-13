@@ -37,12 +37,13 @@ module Mnenv
           fi
 
           # Determine executable path based on source
+          # Installed versions are in $MNENV_ROOT/installed/<version>/
           if [ "$SOURCE" = "binary" ]; then
             # Binary: single self-contained binary
-            EXECUTABLE="$MNENV_ROOT/versions/$VERSION/metanorma"
+            EXECUTABLE="$MNENV_ROOT/installed/$VERSION/metanorma"
           else
             # Gemfile: binstub from bundle install
-            EXECUTABLE="$MNENV_ROOT/versions/$VERSION/bin/#{executable_name}"
+            EXECUTABLE="$MNENV_ROOT/installed/$VERSION/bin/#{executable_name}"
           fi
 
           if [ ! -f "$EXECUTABLE" ]; then

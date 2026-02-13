@@ -32,8 +32,8 @@ module Mnenv
       version, source = resolve_version_and_source(version, options[:source], options[:interactive])
       verify_installed!(version, source)
 
-      File.write(File.expand_path('~/.mnenv/version'), version)
-      File.write(File.expand_path('~/.mnenv/source'), source) if source
+      File.write(Paths::VERSION_FILE, version)
+      File.write(Paths::SOURCE_FILE, source) if source
       puts "Global Metanorma version set to #{version}#{source ? " (source: #{source})" : ''}"
     rescue StandardError => e
       warn "Error: #{e.message}"
@@ -60,9 +60,9 @@ module Mnenv
     method_option :format, type: :string, aliases: '-f', default: 'text',
                            desc: 'Output format (text or json)'
     def versions
-      versions_dir = File.expand_path('~/.mnenv/versions')
+      installed = list_installed_versions
 
-      unless Dir.exist?(versions_dir)
+      if installed.empty?
         puts 'No versions installed.'
         puts "\nRun: mnenv available"
         return
@@ -72,37 +72,24 @@ module Mnenv
 
       case options[:format]
       when 'json'
-        installed = []
-        Dir.glob("#{versions_dir}/*/").sort.each do |dir|
-          version = File.basename(dir)
-          source_file = File.join(dir, 'source')
-          source = File.exist?(source_file) ? File.read(source_file).strip : 'unknown'
-          is_current = version == current_version && source == current_source
-          installed << {
-            'version' => version,
-            'source' => source,
-            'current' => is_current
-          }
-        end
-
         output = {
           'current_version' => current_version,
           'current_source' => current_source,
-          'installed' => installed
+          'installed' => installed.map do |version, sources|
+            sources.map do |source|
+              {
+                'version' => version,
+                'source' => source,
+                'current' => version == current_version && source == current_source
+              }
+            end
+          end.flatten
         }
         puts JSON.pretty_generate(output)
       else
         puts 'Installed Metanorma versions:'
 
-        versions_by_name = Hash.new { |h, k| h[k] = [] }
-        Dir.glob("#{versions_dir}/*/").sort.each do |dir|
-          version = File.basename(dir)
-          source_file = File.join(dir, 'source')
-          source = File.exist?(source_file) ? File.read(source_file).strip : 'unknown'
-          versions_by_name[version] << source
-        end
-
-        versions_by_name.sort.reverse.each do |version, sources|
+        installed.sort.reverse.each do |version, sources|
           sources.sort.each do |source|
             is_current = version == current_version && source == current_source
             marker = is_current ? '* ' : '  '
@@ -118,6 +105,29 @@ module Mnenv
 
     private
 
+    # List installed versions with their sources
+    # Uses Paths::INSTALLED_DIR (not the versions data directory)
+    def list_installed_versions
+      return {} unless Dir.exist?(Paths::INSTALLED_DIR)
+
+      versions = Hash.new { |h, k| h[k] = [] }
+
+      Dir.glob("#{Paths::INSTALLED_DIR}/*/").sort.each do |dir|
+        version = File.basename(dir)
+        source_file = File.join(dir, 'source')
+
+        # Only include directories that have a valid source file
+        next unless File.exist?(source_file)
+
+        source = File.read(source_file).strip
+        next if source.empty?
+
+        versions[version] << source
+      end
+
+      versions
+    end
+
     def resolve_version_and_source(version, source, interactive)
       version, source = select_version_interactive if interactive || version.nil?
       source ||= default_source
@@ -127,7 +137,7 @@ module Mnenv
     def select_version_interactive
       prompt = TTY::Prompt.new
       choices = installed_versions.map do |v|
-        source_file = File.expand_path("~/.mnenv/versions/#{v}/source")
+        source_file = File.join(Paths.version_install_dir(v), 'source')
         src = File.exist?(source_file) ? File.read(source_file).strip : 'unknown'
         { name: "#{v} (#{src})", value: v }
       end
@@ -145,7 +155,7 @@ module Mnenv
     end
 
     def verify_installed!(version, source)
-      version_dir = File.expand_path("~/.mnenv/versions/#{version}")
+      version_dir = Paths.version_install_dir(version)
       unless Dir.exist?(version_dir)
         raise "Version #{version} is not installed. Run: mnenv install #{version}#{" --source #{source}" if source}"
       end
@@ -159,13 +169,19 @@ module Mnenv
     end
 
     def installed_versions
-      Dir.glob(File.expand_path('~/.mnenv/versions/*/')).map { |d| File.basename(d) }.sort
+      return [] unless Dir.exist?(Paths::INSTALLED_DIR)
+
+      Dir.glob("#{Paths::INSTALLED_DIR}/*/").filter_map do |dir|
+        version = File.basename(dir)
+        source_file = File.join(dir, 'source')
+        # Only include directories that have a valid source file
+        version if File.exist?(source_file)
+      end.sort
     end
 
     def default_source
-      global_source_file = File.expand_path('~/.mnenv/source')
-      if File.exist?(global_source_file)
-        File.read(global_source_file).strip
+      if File.exist?(Paths::SOURCE_FILE)
+        File.read(Paths::SOURCE_FILE).strip
       else
         'gemfile'
       end
@@ -184,8 +200,7 @@ module Mnenv
         dir = parent
       end
 
-      global_version_file = File.expand_path('~/.mnenv/version')
-      return File.read(global_version_file).strip if File.exist?(global_version_file)
+      return File.read(Paths::VERSION_FILE).strip if File.exist?(Paths::VERSION_FILE)
 
       nil
     end
@@ -203,8 +218,7 @@ module Mnenv
         dir = parent
       end
 
-      global_source_file = File.expand_path('~/.mnenv/source')
-      return File.read(global_source_file).strip if File.exist?(global_source_file)
+      return File.read(Paths::SOURCE_FILE).strip if File.exist?(Paths::SOURCE_FILE)
 
       'gemfile'
     end
