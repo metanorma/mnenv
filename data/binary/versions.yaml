@@ -1,0 +1,1241 @@
+---
+metadata:
+  generated_at: '2026-02-13T10:49:47Z'
+  source: binary
+  count: 30
+  latest_version: 1.14.4
+versions:
+- version: 1.14.4
+  published_at: '2025-12-01T23:21:36Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.14.4
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.14.4
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.4/metanorma-darwin-arm64.tgz
+    size: 343796411
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.4/metanorma-linux-aarch64.tgz
+    size: 335355982
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.4/metanorma-linux-musl-x86_64.tgz
+    size: 340508971
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.4/metanorma-linux-x86_64.tgz
+    size: 340494359
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.4/metanorma-windows-x86_64.exe
+    size: 145377491
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.4/metanorma-windows-x86_64.zip
+    size: 145277781
+- version: 1.14.3
+  published_at: '2025-11-18T15:58:50Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.14.3
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.14.3
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.3/metanorma-darwin-arm64.tgz
+    size: 343280117
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.3/metanorma-linux-aarch64.tgz
+    size: 337107802
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.3/metanorma-linux-musl-x86_64.tgz
+    size: 343972653
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.3/metanorma-linux-x86_64.tgz
+    size: 342264327
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.3/metanorma-windows-x86_64.exe
+    size: 145950805
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.3/metanorma-windows-x86_64.zip
+    size: 145850940
+- version: 1.14.1
+  published_at: '2025-11-05T06:14:33Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.14.1
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.14.1
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.1/metanorma-darwin-arm64.tgz
+    size: 340656975
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.1/metanorma-linux-aarch64.tgz
+    size: 334126887
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.1/metanorma-linux-musl-x86_64.tgz
+    size: 340493890
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.14.1/metanorma-linux-x86_64.tgz
+    size: 340777215
+- version: 1.13.9
+  published_at: '2025-10-13T16:33:36Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.9
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.9
+  platforms:
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.9/metanorma-linux-aarch64.tgz
+    size: 336749440
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.9/metanorma-linux-musl-x86_64.tgz
+    size: 342330211
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.9/metanorma-linux-x86_64.tgz
+    size: 342325327
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.9/metanorma-windows-x86_64.exe
+    size: 144588139
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.9/metanorma-windows-x86_64.zip
+    size: 144488201
+- version: 1.13.8
+  published_at: '2025-09-30T13:36:07Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.8
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.8
+  platforms:
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.8/metanorma-linux-aarch64.tgz
+    size: 334449733
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.8/metanorma-linux-musl-x86_64.tgz
+    size: 340050996
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.8/metanorma-linux-x86_64.tgz
+    size: 340118995
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.8/metanorma-windows-x86_64.exe
+    size: 143319577
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.8/metanorma-windows-x86_64.zip
+    size: 143219263
+- version: 1.13.7
+  published_at: '2025-09-29T15:17:03Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.7
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.7
+  platforms:
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.7/metanorma-linux-aarch64.tgz
+    size: 333924892
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.7/metanorma-linux-musl-x86_64.tgz
+    size: 338884736
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.7/metanorma-linux-x86_64.tgz
+    size: 340185769
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.7/metanorma-windows-x86_64.exe
+    size: 143308743
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.7/metanorma-windows-x86_64.zip
+    size: 143208584
+- version: 1.13.6
+  published_at: '2025-09-15T17:57:00Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.6
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.6
+  platforms:
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.6/metanorma-linux-aarch64.tgz
+    size: 322414768
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.6/metanorma-linux-x86_64.tgz
+    size: 326631216
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.6/metanorma-windows-x86_64.exe
+    size: 137528596
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.6/metanorma-windows-x86_64.zip
+    size: 137426189
+- version: 1.13.5
+  published_at: '2025-09-02T12:48:36Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.5
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.5
+  platforms:
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.5/metanorma-linux-aarch64.tgz
+    size: 314936335
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.5/metanorma-linux-musl-x86_64.tgz
+    size: 320307908
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.5/metanorma-linux-x86_64.tgz
+    size: 319843979
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.5/metanorma-windows-x86_64.exe
+    size: 133820960
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.5/metanorma-windows-x86_64.zip
+    size: 133717307
+- version: 1.13.4
+  published_at: '2025-08-18T13:48:03Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.4
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.4
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.4/metanorma-darwin-arm64.tgz
+    size: 277374677
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.4/metanorma-darwin-x86_64.tgz
+    size: 275351479
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.4/metanorma-linux-aarch64.tgz
+    size: 271914272
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.4/metanorma-linux-musl-x86_64.tgz
+    size: 277339675
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.4/metanorma-linux-x86_64.tgz
+    size: 276660534
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.4/metanorma-windows-x86_64.exe
+    size: 112512275
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.4/metanorma-windows-x86_64.zip
+    size: 112402211
+- version: 1.13.2
+  published_at: '2025-07-24T04:19:50Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.2
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.2
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.2/metanorma-darwin-arm64.tgz
+    size: 273512027
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.2/metanorma-darwin-x86_64.tgz
+    size: 272869691
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.2/metanorma-linux-aarch64.tgz
+    size: 266771979
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.2/metanorma-linux-musl-x86_64.tgz
+    size: 273117573
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.2/metanorma-linux-x86_64.tgz
+    size: 271677467
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.2/metanorma-windows-x86_64.exe
+    size: 112031592
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.2/metanorma-windows-x86_64.zip
+    size: 111921503
+- version: 1.13.1
+  published_at: '2025-07-22T14:54:40Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.1
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.1
+  platforms:
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.1/metanorma-linux-aarch64.tgz
+    size: 266950076
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.1/metanorma-linux-musl-x86_64.tgz
+    size: 272795391
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.1/metanorma-linux-x86_64.tgz
+    size: 272344815
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.1/metanorma-windows-x86_64.exe
+    size: 112023684
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.1/metanorma-windows-x86_64.zip
+    size: 111913650
+- version: 1.13.0
+  published_at: '2025-07-05T14:08:26Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.13.0
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.13.0
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.0/metanorma-darwin-arm64.tgz
+    size: 278586778
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.0/metanorma-darwin-x86_64.tgz
+    size: 277651305
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.0/metanorma-linux-aarch64.tgz
+    size: 266033242
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.0/metanorma-linux-musl-x86_64.tgz
+    size: 272127845
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.0/metanorma-linux-x86_64.tgz
+    size: 271336014
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.0/metanorma-windows-x86_64.exe
+    size: 112033774
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.13.0/metanorma-windows-x86_64.zip
+    size: 111923719
+- version: 1.12.10
+  published_at: '2025-06-23T13:59:41Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.10
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.10
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.10/metanorma-darwin-arm64.tgz
+    size: 278254158
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.10/metanorma-darwin-x86_64.tgz
+    size: 278258037
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.10/metanorma-linux-aarch64.tgz
+    size: 272098862
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.10/metanorma-linux-musl-x86_64.tgz
+    size: 278270708
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.10/metanorma-linux-x86_64.tgz
+    size: 277712255
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.10/metanorma-windows-x86_64.exe
+    size: 113443048
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.10/metanorma-windows-x86_64.zip
+    size: 113333635
+- version: 1.12.9
+  published_at: '2025-06-10T06:44:16Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.9
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.9
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.9/metanorma-darwin-arm64.tgz
+    size: 278225639
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.9/metanorma-linux-aarch64.tgz
+    size: 272308389
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.9/metanorma-linux-musl-x86_64.tgz
+    size: 278564357
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.9/metanorma-linux-x86_64.tgz
+    size: 277728314
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.9/metanorma-windows-x86_64.exe
+    size: 113445017
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.9/metanorma-windows-x86_64.zip
+    size: 113335210
+- version: 1.12.8
+  published_at: '2025-05-26T06:35:42Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.8
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.8
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.8/metanorma-darwin-arm64.tgz
+    size: 278832602
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.8/metanorma-darwin-x86_64.tgz
+    size: 277604237
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.8/metanorma-linux-aarch64.tgz
+    size: 272775845
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.8/metanorma-linux-musl-x86_64.tgz
+    size: 278144616
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.8/metanorma-linux-x86_64.tgz
+    size: 277630516
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.8/metanorma-windows-x86_64.exe
+    size: 113387000
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.8/metanorma-windows-x86_64.zip
+    size: 113277016
+- version: 1.12.7
+  published_at: '2025-05-17T13:26:12Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.7
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.7
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.7/metanorma-darwin-arm64.tgz
+    size: 279525514
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.7/metanorma-linux-aarch64.tgz
+    size: 271958560
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.7/metanorma-linux-musl-x86_64.tgz
+    size: 277561486
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.7/metanorma-linux-x86_64.tgz
+    size: 277297664
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.7/metanorma-windows-x86_64.exe
+    size: 113352495
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.7/metanorma-windows-x86_64.zip
+    size: 113242274
+- version: 1.12.6
+  published_at: '2025-04-29T14:10:13Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.6
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.6
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.6/metanorma-darwin-arm64.tgz
+    size: 279427422
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.6/metanorma-linux-aarch64.tgz
+    size: 272226073
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.6/metanorma-linux-musl-x86_64.tgz
+    size: 277444182
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.6/metanorma-linux-x86_64.tgz
+    size: 278333131
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.6/metanorma-windows-x86_64.exe
+    size: 113294408
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.6/metanorma-windows-x86_64.zip
+    size: 113184281
+- version: 1.12.5
+  published_at: '2025-04-16T02:41:16Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.5
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.5
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.5/metanorma-darwin-arm64.tgz
+    size: 276237058
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.5/metanorma-darwin-x86_64.tgz
+    size: 274909826
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.5/metanorma-linux-aarch64.tgz
+    size: 270150050
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.5/metanorma-linux-musl-x86_64.tgz
+    size: 274736989
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.5/metanorma-linux-x86_64.tgz
+    size: 275170612
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.5/metanorma-windows-x86_64.exe
+    size: 112366325
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.5/metanorma-windows-x86_64.zip
+    size: 112256521
+- version: 1.12.4
+  published_at: '2025-04-03T03:51:04Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.4
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.4
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.4/metanorma-darwin-arm64.tgz
+    size: 276466989
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.4/metanorma-darwin-x86_64.tgz
+    size: 275937058
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.4/metanorma-linux-aarch64.tgz
+    size: 270011094
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.4/metanorma-linux-musl-x86_64.tgz
+    size: 274975658
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.4/metanorma-linux-x86_64.tgz
+    size: 275126168
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.4/metanorma-windows-x86_64.exe
+    size: 112260907
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.4/metanorma-windows-x86_64.zip
+    size: 112151032
+- version: 1.12.3
+  published_at: '2025-03-18T06:24:45Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.3
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.3
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.3/metanorma-darwin-arm64.tgz
+    size: 289742924
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.3/metanorma-darwin-x86_64.tgz
+    size: 288513038
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.3/metanorma-linux-aarch64.tgz
+    size: 283953010
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.3/metanorma-linux-musl-x86_64.tgz
+    size: 289229130
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.3/metanorma-linux-x86_64.tgz
+    size: 289201961
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.3/metanorma-windows-x86_64.exe
+    size: 119198301
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.3/metanorma-windows-x86_64.zip
+    size: 119090591
+- version: 1.12.1
+  published_at: '2025-03-05T04:38:06Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.12.1
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.12.1
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.1/metanorma-darwin-arm64.tgz
+    size: 291563780
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.1/metanorma-darwin-x86_64.tgz
+    size: 289859921
+  - name: linux
+    arch: aarch64
+    format: tgz
+    filename: metanorma-linux-aarch64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.1/metanorma-linux-aarch64.tgz
+    size: 283995369
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.1/metanorma-linux-musl-x86_64.tgz
+    size: 289635080
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.1/metanorma-linux-x86_64.tgz
+    size: 289010395
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.1/metanorma-windows-x86_64.exe
+    size: 119316002
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.12.1/metanorma-windows-x86_64.zip
+    size: 119208267
+- version: 1.11.6
+  published_at: '2025-02-04T02:33:40Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.11.6
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.11.6
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.6/metanorma-darwin-arm64.tgz
+    size: 290155606
+- version: 1.11.5
+  published_at: '2025-01-22T03:55:17Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.11.5
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.11.5
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.5/metanorma-darwin-arm64.tgz
+    size: 278451030
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.5/metanorma-darwin-x86_64.tgz
+    size: 277481188
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.5/metanorma-linux-musl-x86_64.tgz
+    size: 276487064
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.5/metanorma-linux-x86_64.tgz
+    size: 275500859
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.5/metanorma-windows-x86_64.exe
+    size: 113791913
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.5/metanorma-windows-x86_64.zip
+    size: 113682772
+- version: 1.11.4
+  published_at: '2025-01-08T15:10:55Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.11.4
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.11.4
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.4/metanorma-darwin-arm64.tgz
+    size: 279573695
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.4/metanorma-darwin-x86_64.tgz
+    size: 278827121
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.4/metanorma-linux-musl-x86_64.tgz
+    size: 278582734
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.4/metanorma-linux-x86_64.tgz
+    size: 277951186
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.4/metanorma-windows-x86_64.exe
+    size: 114426838
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.4/metanorma-windows-x86_64.zip
+    size: 114317771
+- version: 1.11.3
+  published_at: '2024-12-24T18:36:29Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.11.3
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.11.3
+  platforms:
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.3/metanorma-linux-musl-x86_64.tgz
+    size: 267829401
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.3/metanorma-linux-x86_64.tgz
+    size: 268977136
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.3/metanorma-windows-x86_64.exe
+    size: 112958458
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.3/metanorma-windows-x86_64.zip
+    size: 112849073
+- version: 1.11.2
+  published_at: '2024-12-11T15:55:31Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.11.2
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.11.2
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.2/metanorma-darwin-arm64.tgz
+    size: 273180110
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.2/metanorma-darwin-x86_64.tgz
+    size: 270598763
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.2/metanorma-linux-musl-x86_64.tgz
+    size: 270145803
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.2/metanorma-linux-x86_64.tgz
+    size: 270373266
+- version: 1.11.1
+  published_at: '2024-11-16T03:44:59Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.11.1
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.11.1
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.1/metanorma-darwin-arm64.tgz
+    size: 280689676
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.1/metanorma-darwin-x86_64.tgz
+    size: 279060709
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.1/metanorma-linux-musl-x86_64.tgz
+    size: 280875430
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.1/metanorma-linux-x86_64.tgz
+    size: 280573577
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.1/metanorma-windows-x86_64.exe
+    size: 113822594
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.1/metanorma-windows-x86_64.zip
+    size: 113698130
+- version: 1.11.0
+  published_at: '2024-11-12T01:55:49Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.11.0
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.11.0
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.0/metanorma-darwin-arm64.tgz
+    size: 279924546
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.0/metanorma-darwin-x86_64.tgz
+    size: 279515053
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.0/metanorma-linux-musl-x86_64.tgz
+    size: 280589990
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.0/metanorma-linux-x86_64.tgz
+    size: 280437599
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.0/metanorma-windows-x86_64.exe
+    size: 113776067
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.11.0/metanorma-windows-x86_64.zip
+    size: 113666959
+- version: 1.10.11
+  published_at: '2024-10-28T12:11:36Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.10.11
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.10.11
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.11/metanorma-darwin-arm64.tgz
+    size: 284090518
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.11/metanorma-darwin-x86_64.tgz
+    size: 280942603
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.11/metanorma-linux-musl-x86_64.tgz
+    size: 282989795
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.11/metanorma-linux-x86_64.tgz
+    size: 283099411
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.11/metanorma-windows-x86_64.exe
+    size: 114993901
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.11/metanorma-windows-x86_64.zip
+    size: 114885275
+- version: 1.10.10
+  published_at: '2024-10-15T03:40:25Z'
+  parsed_at: '2026-02-13T10:49:47Z'
+  tag_name: v1.10.10
+  html_url: https://github.com/metanorma/packed-mn/releases/tag/v1.10.10
+  platforms:
+  - name: darwin
+    arch: arm64
+    format: tgz
+    filename: metanorma-darwin-arm64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.10/metanorma-darwin-arm64.tgz
+    size: 268297733
+  - name: darwin
+    arch: x86_64
+    format: tgz
+    filename: metanorma-darwin-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.10/metanorma-darwin-x86_64.tgz
+    size: 268076781
+  - name: linux
+    arch: x86_64
+    variant: musl
+    format: tgz
+    filename: metanorma-linux-musl-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.10/metanorma-linux-musl-x86_64.tgz
+    size: 269133944
+  - name: linux
+    arch: x86_64
+    format: tgz
+    filename: metanorma-linux-x86_64.tgz
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.10/metanorma-linux-x86_64.tgz
+    size: 268999967
+  - name: windows
+    arch: x86_64
+    format: exe
+    filename: metanorma-windows-x86_64.exe
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.10/metanorma-windows-x86_64.exe
+    size: 108043901
+  - name: windows
+    arch: x86_64
+    format: zip
+    filename: metanorma-windows-x86_64.zip
+    url: https://github.com/metanorma/packed-mn/releases/download/v1.10.10/metanorma-windows-x86_64.zip
+    size: 107933120

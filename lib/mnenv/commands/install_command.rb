@@ -13,88 +13,22 @@ module Mnenv
     class_option :interactive, type: :boolean, aliases: '-i', default: false,
                                desc: 'Interactive mode for version selection'
 
-    desc '--list', 'List all available Metanorma versions'
-    def list
-      current_version, current_source = resolve_current
-
-      puts "\nAvailable Metanorma versions:"
-      puts "(Sources: gemfile = RubyGems, binary = packed-mn binary)\n"
-
-      # Get all unique versions from both sources
-      gemfile_repo = GemfileRepository.new
-      binary_repo = BinaryRepository.new
-
-      gemfile_versions = gemfile_repo.all.sort.reverse
-      binary_versions = binary_repo.all
-
-      # Combine all versions
-      all_versions = Hash.new { |h, k| h[k] = { gemfile: false, binary: false } }
-
-      gemfile_versions.each do |v|
-        all_versions[v.version][:gemfile] = true
-        all_versions[v.version][:gemfile_obj] = v
-      end
-
-      binary_versions.each do |v|
-        all_versions[v.version][:binary] = true
-        all_versions[v.version][:binary_obj] = v
-      end
-
-      # Check what's installed (from installed directory, not versions data)
-      if Dir.exist?(Paths::INSTALLED_DIR)
-        Dir.glob("#{Paths::INSTALLED_DIR}/*/").each do |dir|
-          version = File.basename(dir)
-          source_file = File.join(dir, 'source')
-          source = File.exist?(source_file) ? File.read(source_file).strip : nil
-          all_versions[version][:"installed_#{source}"] = true if source && all_versions[version]
-        end
-      end
-
-      # Display sorted versions (newest first)
-      all_versions.sort.reverse.each do |version, info|
-        # Build sources string
-        sources = []
-        sources << 'gemfile' if info[:gemfile]
-        sources << 'binary' if info[:binary]
-
-        # Check if current
-        is_current = version == current_version && sources.include?(current_source)
-        marker = is_current ? '* ' : '  '
-
-        # Version display
-        version_display = version.ljust(15)
-
-        # Sources display
-        sources_display = sources.join(', ')
-
-        # Installed status
-        installed = []
-        installed << 'gemfile' if info[:installed_gemfile]
-        installed << 'binary' if info[:installed_binary]
-        installed_display = installed.empty? ? '' : " [installed: #{installed.join(', ')}]"
-
-        puts "  #{marker}#{version_display}(#{sources_display})#{installed_display}"
-      end
-
-      # Legend
-      puts "\nLegend:"
-      puts '  * Current version'
-      puts '  [installed: ...] = Already installed locally'
-      puts "\nInstall with: mnenv install VERSION --source SOURCE"
-      puts 'Examples:'
-      puts '  mnenv install 1.14.4 --source gemfile'
-      puts '  mnenv install 1.14.4 --source binary'
-    end
-
     desc 'VERSION', 'Install a specific Metanorma version'
-    method_option :source, type: :string, enum: %w[gemfile binary], default: 'gemfile'
-    method_option :interactive, type: :boolean, aliases: '-i', default: false
-    def install(version = nil, _options = nil)
-      opts = _options || options
-      if opts[:interactive] || version.nil?
+    method_option :source, type: :string, enum: %w[gemfile binary], default: 'gemfile',
+                           desc: 'Installation source (gemfile or binary)'
+    method_option :interactive, type: :boolean, aliases: '-i', default: false,
+                                desc: 'Interactive mode for version selection'
+    method_option :list, type: :boolean, aliases: '-l', default: false,
+                         desc: 'List all available Metanorma versions'
+    def install(version = nil)
+      # If --list flag is provided, show available versions and exit
+      return list_available_versions if options[:list]
+
+      # If no version provided or interactive mode, prompt for selection
+      if options[:interactive] || version.nil?
         version, source = select_installation_interactive
       else
-        source = opts[:source]
+        source = options[:source]
       end
 
       installer = InstallerFactory.create(version, source: source)
@@ -119,6 +53,114 @@ module Mnenv
 
     private
 
+    def list_available_versions
+      current_version, current_source = resolve_current
+      current_platform = detect_platform
+
+      puts "\nAvailable Metanorma versions:"
+      puts "(gemfile = source build, binary = prebuilt for specific platforms)\n"
+
+      # Get all unique versions from both sources
+      gemfile_repo = GemfileRepository.new
+      binary_repo = BinaryRepository.new
+
+      gemfile_versions = gemfile_repo.all.sort.reverse
+      binary_versions = binary_repo.all
+
+      # Combine all versions
+      all_versions = Hash.new { |h, k| h[k] = { gemfile: false, binary: false } }
+
+      gemfile_versions.each do |v|
+        all_versions[v.version][:gemfile] = true
+        all_versions[v.version][:gemfile_obj] = v
+      end
+
+      binary_versions.each do |v|
+        all_versions[v.version][:binary] = true
+        all_versions[v.version][:binary_obj] = v
+        all_versions[v.version][:binary_platforms] = extract_platforms(v.assets)
+      end
+
+      # Check what's installed (from installed directory, not versions data)
+      if Dir.exist?(Paths::INSTALLED_DIR)
+        Dir.glob("#{Paths::INSTALLED_DIR}/*/").each do |dir|
+          version = File.basename(dir)
+          source_file = File.join(dir, 'source')
+          source = File.exist?(source_file) ? File.read(source_file).strip : nil
+          all_versions[version][:"installed_#{source}"] = true if source && all_versions[version]
+        end
+      end
+
+      # Display sorted versions (newest first)
+      all_versions.sort.reverse.each do |version, info|
+        # Build sources string with platform info for binary
+        sources = []
+        sources << 'gemfile' if info[:gemfile]
+        if info[:binary]
+          platforms = info[:binary_platforms] || []
+          if platforms.any?
+            # Highlight current platform
+            platform_display = platforms.map do |p|
+              p == current_platform ? "#{p}*" : p
+            end.join(', ')
+            sources << "binary [#{platform_display}]"
+          else
+            sources << 'binary'
+          end
+        end
+
+        # Check if current
+        is_current = version == current_version && sources.any? { |s| s.include?(current_source.to_s) }
+        marker = is_current ? '* ' : '  '
+
+        # Version display
+        version_display = version.ljust(15)
+
+        # Sources display
+        sources_display = sources.join(', ')
+
+        # Installed status
+        installed = []
+        installed << 'gemfile' if info[:installed_gemfile]
+        installed << 'binary' if info[:installed_binary]
+        installed_display = installed.empty? ? '' : " [installed: #{installed.join(', ')}]"
+
+        puts "  #{marker}#{version_display}(#{sources_display})#{installed_display}"
+      end
+
+      # Legend
+      puts "\nLegend:"
+      puts '  * Current version / platform'
+      puts '  [installed: ...] = Already installed locally'
+      puts "  Detected platform: #{current_platform}"
+      puts "\nInstall with: mnenv install VERSION --source SOURCE"
+      puts 'Examples:'
+      puts '  mnenv install 1.14.4 --source gemfile'
+      puts '  mnenv install 1.14.4 --source binary'
+    end
+
+    def extract_platforms(assets)
+      return [] unless assets
+
+      assets.filter_map do |asset|
+        # Match patterns like metanorma-darwin-arm64.tgz or metanorma-linux-x86_64.tgz
+        case asset
+        when /darwin/ then 'macos'
+        when /linux/ then 'linux'
+        when /windows/ then 'windows'
+        end
+      end.uniq.sort
+    end
+
+    def detect_platform
+      case RbConfig::CONFIG['host_os']
+      when /linux/ then 'linux'
+      when /darwin/ then 'macos'
+      when /mswin|mingw|cygwin/ then 'windows'
+      else 'unknown'
+      end
+    end
+
     def resolve_current
       # Get current version
       version = ENV['MNENV_VERSION']
@@ -134,9 +176,8 @@ module Mnenv
         end
 
         # Check global version
-        version ||= begin
-          File.read(Paths::VERSION_FILE).strip if File.exist?(Paths::VERSION_FILE)
-        end
+        version ||= (File.read(Paths::VERSION_FILE).strip if File.exist?(Paths::VERSION_FILE))
+
       end
 
       # Get current source
@@ -153,9 +194,8 @@ module Mnenv
         end
 
         # Check global source
-        source ||= begin
-          File.read(Paths::SOURCE_FILE).strip if File.exist?(Paths::SOURCE_FILE)
-        end
+        source ||= (File.read(Paths::SOURCE_FILE).strip if File.exist?(Paths::SOURCE_FILE))
+
       end
 
       [version, source]

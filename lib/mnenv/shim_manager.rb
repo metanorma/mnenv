@@ -64,9 +64,9 @@ module Mnenv
 
         # On Windows, bundler creates both 'command' and 'command.cmd'
         # We want to create shims for the base command name
-        if windows?
+        if windows? && (basename.end_with?('.cmd') || basename.end_with?('.bat'))
           # Skip .cmd and .bat files - we'll create shims from the base name
-          next if basename.end_with?('.cmd') || basename.end_with?('.bat')
+          next
         end
 
         # Check if file is executable (Unix) or is a batch file (Windows)

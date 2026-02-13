@@ -23,7 +23,7 @@ module Mnenv
     attr_reader :data_dir, :versions_file_path
 
     def initialize(data_dir: nil, update: false)
-      @data_dir = data_dir || default_data_dir
+      @data_dir = data_dir || cli_data_dir || default_data_dir
       @versions_file_path = File.join(@data_dir, 'versions.yaml')
       @versions_cache = {}
       @update = update
@@ -92,6 +92,15 @@ module Mnenv
     def source_name = raise NotImplementedError
 
     private
+
+    def cli_data_dir
+      # Check if a data directory was specified via CLI option
+      return nil unless defined?(Mnenv::Cli) && Mnenv::Cli.data_dir
+
+      source_dir = Mnenv::Cli.data_dir
+      # If the CLI data-dir is specified, use it directly with the source name
+      File.join(source_dir, source_name.to_s)
+    end
 
     def default_data_dir
       # Use the versions manager to ensure data is available

@@ -64,7 +64,7 @@ module Mnenv
 
       if installed.empty?
         puts 'No versions installed.'
-        puts "\nRun: mnenv available"
+        puts "\nRun: mnenv install --list"
         return
       end
 
@@ -99,7 +99,7 @@ module Mnenv
 
         puts "\nCurrent version: #{current_version || 'none'}"
         puts "Current source: #{current_source || 'none'}"
-        puts "\nTo see available versions, run: mnenv available"
+        puts "\nTo see available versions, run: mnenv install --list"
       end
     end
 
@@ -192,7 +192,8 @@ module Mnenv
 
       dir = Dir.pwd
       loop do
-        return File.read(File.join(dir, '.metanorma-version')).strip if File.exist?(File.join(dir, '.metanorma-version'))
+        return File.read(File.join(dir, '.metanorma-version')).strip if File.exist?(File.join(dir,
+                                                                                              '.metanorma-version'))
 
         parent = File.dirname(dir)
         break if parent == dir # Reached root

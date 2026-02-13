@@ -14,9 +14,9 @@ module Mnenv
   autoload :SnapCommand, 'mnenv/commands/snap_command'
   autoload :HomebrewCommand, 'mnenv/commands/homebrew_command'
   autoload :ChocolateyCommand, 'mnenv/commands/chocolatey_command'
+  autoload :BinaryCommand, 'mnenv/commands/binary_command'
   autoload :InstallCommand, 'mnenv/commands/install_command'
   autoload :VersionCommand, 'mnenv/commands/version_command'
-  autoload :AvailableCommand, 'mnenv/commands/available_command'
   autoload :UninstallCommand, 'mnenv/commands/uninstall_command'
   autoload :JsonFormatter, 'mnenv/json_formatter'
   autoload :ShimManager, 'mnenv/shim_manager'
@@ -27,12 +27,15 @@ module Mnenv
 
     # Global options
     class_option :verbose, type: :boolean, default: false, desc: 'Enable verbose output'
+    class_option :'data-dir', type: :string, desc: 'Path to data directory (default: uses ~/.mnenv/versions/data)'
 
-    # Track verbose mode for use in other classes
+    # Track verbose mode and data_dir for use in other classes
     class << self
       def verbose?
         @verbose ||= false
       end
+
+      attr_accessor :data_dir
 
       attr_writer :verbose
     end
@@ -40,6 +43,7 @@ module Mnenv
     def initialize(*args)
       super
       self.class.verbose = options[:verbose]
+      self.class.data_dir = options[:'data-dir']
     end
 
     # Platform subcommands
@@ -55,26 +59,21 @@ module Mnenv
     desc 'chocolatey SUBCOMMAND', 'Manage Chocolatey versions'
     subcommand 'chocolatey', ChocolateyCommand
 
+    desc 'binary SUBCOMMAND', 'Manage Binary (packed-mn) versions'
+    subcommand 'binary', BinaryCommand
+
     # Interactive installation commands
     desc 'install [VERSION]', 'Install a Metanorma version'
     method_option :source, type: :string, enum: %w[gemfile binary], default: 'gemfile',
                            desc: 'Installation source (gemfile or binary)'
     method_option :interactive, type: :boolean, aliases: '-i', default: false,
                                 desc: 'Interactive mode for version selection'
+    method_option :list, type: :boolean, aliases: '-l', default: false,
+                         desc: 'List all available Metanorma versions'
     def install(version = nil)
       cmd = InstallCommand.new
       cmd.options = Thor::CoreExt::HashWithIndifferentAccess.new(options.merge(version: version))
-      if version.nil? && options[:interactive]
-        cmd.install(nil, options)
-      elsif version == '--list'
-        cmd.list
-      else
-        cmd.install(version, options)
-      end
-    rescue Thor::UndefinedCommandError
-      # Handle --list flag
-      cmd = InstallCommand.new
-      cmd.list
+      cmd.install(version)
     end
 
     desc 'use [VERSION]', 'Set Metanorma version for current shell session'
@@ -116,23 +115,6 @@ module Mnenv
       cmd.versions
     end
 
-    desc 'available [SOURCE]', 'List available Metanorma versions to install'
-    method_option :format, type: :string, aliases: '-f', default: 'text',
-                           desc: 'Output format (text or json)'
-    def available(source = nil)
-      cmd = AvailableCommand.new
-      cmd.options = options
-
-      case source
-      when 'gemfile' then cmd.gemfile
-      when 'binary' then cmd.binary
-      when 'all', nil then cmd.all
-      else
-        puts "Error: Unknown source '#{source}'. Available: gemfile, binary, all"
-        exit 1
-      end
-    end
-
     desc 'uninstall VERSION', 'Uninstall a Metanorma version'
     method_option :force, type: :boolean, aliases: '-f', default: false,
                           desc: 'Force uninstallation without confirmation'
@@ -147,7 +129,8 @@ module Mnenv
       'gemfile' => GemfileRepository,
       'snap' => SnapRepository,
       'homebrew' => HomebrewRepository,
-      'chocolatey' => ChocolateyRepository
+      'chocolatey' => ChocolateyRepository,
+      'binary' => BinaryRepository
     }.freeze
 
     desc 'info PLATFORM VERSION', 'Get details for a specific version'
