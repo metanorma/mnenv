@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
-require 'rspec/core/rake_task'
 require 'bundler/gem_tasks'
 
-RSpec::Core::RakeTask.new(:spec)
-
-task default: :spec
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec)
+  task default: :spec
+rescue LoadError
+  # rspec not available, skip spec task
+end
