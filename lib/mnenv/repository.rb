@@ -2,19 +2,31 @@
 
 require 'yaml'
 require 'fileutils'
-require 'open-uri'
+require_relative 'versions_manager'
 
 module Mnenv
   class Repository
-    # Base URL for version data in the metanorma/versions repository
-    VERSIONS_BASE_URL = 'https://raw.githubusercontent.com/metanorma/versions/main/data'
+    # Default versions manager (shared across all repositories)
+    class << self
+      def versions_manager
+        @versions_manager ||= VersionsManager.new
+      end
+
+      attr_writer :versions_manager
+
+      # Force update the versions data
+      def update_versions
+        versions_manager.update
+      end
+    end
 
     attr_reader :data_dir, :versions_file_path
 
-    def initialize(data_dir: nil)
-      @data_dir = data_dir
-      @versions_file_path = data_dir ? File.join(data_dir, 'versions.yaml') : nil
+    def initialize(data_dir: nil, update: false)
+      @data_dir = data_dir || default_data_dir
+      @versions_file_path = File.join(@data_dir, 'versions.yaml')
       @versions_cache = {}
+      @update = update
       load
     end
 
@@ -81,19 +93,18 @@ module Mnenv
 
     private
 
+    def default_data_dir
+      # Use the versions manager to ensure data is available
+      data_path = self.class.versions_manager.ensure_versions_data(update: @update)
+      File.join(data_path, source_name.to_s)
+    end
+
     def fetch_versions_data
-      if @data_dir && File.file?(@versions_file_path)
-        # Local mode: read from file
-        YAML.safe_load(File.read(@versions_file_path), permitted_classes: [Time, Symbol])
-      else
-        # Remote mode: fetch from GitHub
-        url = "#{VERSIONS_BASE_URL}/#{source_name}/versions.yaml"
-        URI.open(url) do |io|
-          YAML.safe_load(io.read, permitted_classes: [Time, Symbol])
-        end
-      end
-    rescue OpenURI::HTTPError => e
-      warn "Warning: Failed to fetch versions: #{e.message}"
+      return unless File.file?(@versions_file_path)
+
+      YAML.safe_load(File.read(@versions_file_path), permitted_classes: [Time, Symbol, Date])
+    rescue StandardError => e
+      warn "Warning: Failed to load versions from #{@versions_file_path}: #{e.message}"
       nil
     end
   end

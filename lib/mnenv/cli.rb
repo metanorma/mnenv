@@ -234,5 +234,12 @@ module Mnenv
     def version
       puts "mnenv #{Mnenv::VERSION}"
     end
+
+    desc 'update', 'Update version data from metanorma/versions repository'
+    def update
+      puts 'Updating version data...'
+      Repository.update_versions
+      puts 'Version data updated successfully.'
+    end
   end
 end

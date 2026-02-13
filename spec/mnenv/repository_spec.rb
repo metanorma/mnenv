@@ -41,12 +41,6 @@ RSpec.describe Mnenv::GemfileRepository do
       expect(repo.count).to eq(2)
       expect(repo.all.map(&:version)).to eq(['1.2.3', '1.2.4'])
     end
-
-    it 'fetches from remote when no local file exists', :skip_webmock do
-      # Don't create a versions file - should fetch from remote
-      remote_repo = described_class.new(data_dir: nil)
-      expect(remote_repo.count).to be > 0
-    end
   end
 
   describe '#save and #find' do
@@ -104,6 +98,33 @@ RSpec.describe Mnenv::GemfileRepository do
 
     it 'returns nil when no versions exist' do
       expect(repo.latest).to be_nil
+    end
+  end
+end
+
+RSpec.describe Mnenv::VersionsManager do
+  let(:tmp_dir) { Dir.mktmpdir }
+  let(:manager) { described_class.new(mnenv_dir: tmp_dir) }
+
+  after { FileUtils.rm_rf(tmp_dir) }
+
+  describe '#cloned?' do
+    it 'returns false when not cloned' do
+      expect(manager.cloned?).to be false
+    end
+  end
+
+  describe '#stale?' do
+    it 'returns true when not cloned' do
+      expect(manager.stale?).to be true
+    end
+  end
+
+  describe '#clone_repo', :skip_vcr do
+    it 'clones the versions repository' do
+      manager.clone_repo
+      expect(manager.cloned?).to be true
+      expect(File.directory?(manager.data_path)).to be true
     end
   end
 end

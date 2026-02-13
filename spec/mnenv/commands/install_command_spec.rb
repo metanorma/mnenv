@@ -4,7 +4,7 @@ RSpec.describe Mnenv::InstallCommand do
   let(:command) { described_class.new }
 
   describe '#list' do
-    it 'lists all available Metanorma versions', :skip_webmock do
+    it 'lists all available Metanorma versions', :skip_vcr do
       expect { command.list }.not_to raise_error
     end
   end

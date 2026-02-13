@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'activesupport'
+gem 'git'
 gem 'lutaml-model', '~> 0.7'
 gem 'lutaml-xsd', '~> 1.0'
 gem 'moxml'
@@ -15,5 +16,4 @@ group :development do
   gem 'rake'
   gem 'rspec'
   gem 'rubocop'
-  gem 'webmock'
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Mnenv::Installers::GemfileInstaller, :skip_webmock do
+RSpec.describe Mnenv::Installers::GemfileInstaller, :skip_vcr do
   let(:version) { '1.14.4' }
   let(:source) { 'gemfile' }
   let(:target_dir) { Dir.mktmpdir }
