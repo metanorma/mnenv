@@ -52,14 +52,14 @@ jobs:
         run: |
           mnenv install ${{ env.TEST_VERSION }} --source gemfile
           echo "Gemfile installation:"
-          ls -lah ~/.mnenv/versions/${{ env.TEST_VERSION }}/
+          ls -lah ~/.mnenv/installed/${{ env.TEST_VERSION }}/
 
       - name: Install same version with binary
         if: steps.check_binary.outputs.available == 'true'
         run: |
           mnenv install ${{ env.TEST_VERSION }} --source binary
           echo "Both installations:"
-          ls -lah ~/.mnenv/versions/${{ env.TEST_VERSION }}/
+          ls -lah ~/.mnenv/installed/${{ env.TEST_VERSION }}/
 
       - name: Test gemfile version works
         run: |
@@ -77,8 +77,8 @@ jobs:
           mnenv versions
 
           echo ""
-          echo "Version directories:"
-          ls -lah ~/.mnenv/versions/ 2>/dev/null || echo "No versions installed"
+          echo "Installed directories:"
+          ls -lah ~/.mnenv/installed/ 2>/dev/null || echo "No versions installed"
 
           echo ""
           echo "Current metanorma:"
