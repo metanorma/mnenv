@@ -9,6 +9,15 @@ module Mnenv
     attribute :gemfile_path, :string
     attribute :gemfile_lock_path, :string
 
+    # Class-level versions manager for dependency injection in tests
+    class << self
+      def versions_manager
+        @versions_manager ||= VersionsManager.new
+      end
+
+      attr_writer :versions_manager
+    end
+
     key_value do
       map 'version', to: :version
       map 'published_at', to: :published_at
@@ -19,7 +28,7 @@ module Mnenv
     end
 
     def data_dir
-      @data_dir ||= File.join(VersionsManager.new.data_path, 'gemfile')
+      @data_dir ||= File.join(self.class.versions_manager.data_path, 'gemfile')
     end
 
     def directory_path = File.join(data_dir, "v#{version}")

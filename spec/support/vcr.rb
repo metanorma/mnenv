@@ -55,8 +55,9 @@ RSpec.configure do |config|
       end
     end.new(@test_data_dir)
 
-    # Set the mock manager as the default
+    # Set the mock manager as the default for all classes that use it
     Mnenv::Repository.versions_manager = mock_manager
+    Mnenv::GemfileVersion.versions_manager = mock_manager
   end
 
   config.after(:suite) do

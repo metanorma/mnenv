@@ -19,7 +19,7 @@ RSpec.describe Mnenv::GemfileVersion do
   describe '#directory_path' do
     it 'returns the correct directory path' do
       version = Mnenv::GemfileVersion.new(version: '1.2.3')
-      expect(version.directory_path).to match(%r{/data/gemfile/v1\.2\.3\z})
+      expect(version.directory_path).to match(%r{/gemfile/v1\.2\.3\z})
     end
   end
 
