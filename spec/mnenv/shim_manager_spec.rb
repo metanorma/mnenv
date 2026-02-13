@@ -4,6 +4,23 @@ RSpec.describe Mnenv::ShimManager do
   let(:shims_dir) { Dir.mktmpdir }
   let(:manager) { described_class.new(shims_dir: shims_dir) }
 
+  # Helper to check if we're on Windows
+  def windows?
+    RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
+  end
+
+  # Get expected shim path(s) for a given executable
+  def expected_shim_paths(executable_name)
+    if windows?
+      [
+        File.join(shims_dir, "#{executable_name}.ps1"),
+        File.join(shims_dir, "#{executable_name}.bat")
+      ]
+    else
+      [File.join(shims_dir, executable_name)]
+    end
+  end
+
   after do
     FileUtils.rm_rf(shims_dir) if Dir.exist?(shims_dir)
   end
@@ -50,24 +67,40 @@ RSpec.describe Mnenv::ShimManager do
   end
 
   describe '#create_shims' do
-    it 'creates a shim file with executable permissions' do
+    it 'creates shim files for the executable' do
       manager.create_shims('metanorma')
 
-      shim_path = File.join(shims_dir, 'metanorma')
-      expect(File.exist?(shim_path)).to be true
-      expect(File.executable?(shim_path)).to be true
+      expected_shim_paths('metanorma').each do |shim_path|
+        expect(File.exist?(shim_path)).to be true
+      end
     end
 
     it 'creates shim with correct content structure' do
       manager.create_shims('metanorma')
 
-      shim_path = File.join(shims_dir, 'metanorma')
-      content = File.read(shim_path)
+      shim_paths = expected_shim_paths('metanorma')
 
-      expect(content).to include('#!/bin/bash')
-      expect(content).to include('MNENV_ROOT')
-      expect(content).to include('VERSION="$("$MNENV_ROOT/lib/mnenv/resolver" "version")"')
-      expect(content).to include('exec "$EXECUTABLE" "$@"')
+      if windows?
+        # Check PowerShell shim
+        ps1_path = shim_paths.find { |p| p.end_with?('.ps1') }
+        ps1_content = File.read(ps1_path)
+        expect(ps1_content).to include('MNENV_ROOT')
+        expect(ps1_content).to include('metanorma')
+
+        # Check CMD shim
+        bat_path = shim_paths.find { |p| p.end_with?('.bat') }
+        bat_content = File.read(bat_path)
+        expect(bat_content).to include('MNENV_ROOT')
+        expect(bat_content).to include('metanorma')
+      else
+        # Check bash shim
+        shim_path = shim_paths.first
+        content = File.read(shim_path)
+        expect(content).to include('#!/bin/bash')
+        expect(content).to include('MNENV_ROOT')
+        expect(content).to include('VERSION="$("$MNENV_ROOT/lib/mnenv/resolver" "version")"')
+        expect(content).to include('exec "$EXECUTABLE" "$@"')
+      end
     end
   end
 end
