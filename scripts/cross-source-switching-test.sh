@@ -173,8 +173,8 @@ fi
 # Test 5: Shell override takes precedence
 log_step "Test 5: Shell session override"
 # Local is binary
-export MNENV_VERSION="$VERSION"
-export MNENV_SOURCE=gemfile
+export METANORMA_VERSION="$VERSION"
+export METANORMA_SOURCE=gemfile
 v_env=$(metanorma --version 2>&1 | grep -oP '\d+\.\d+\.\d+' || echo "failed")
 
 if [ "$v_env" = "$VERSION" ]; then
@@ -183,7 +183,7 @@ else
     log_error "✗ Environment override failed"
     exit 1
 fi
-unset MNENV_VERSION MNENV_SOURCE
+unset METANORMA_VERSION METANORMA_SOURCE
 
 # Test 6: Version list shows both sources
 log_step "Test 6: Version list shows both sources"

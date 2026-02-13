@@ -163,7 +163,7 @@ module Mnenv
 
     def resolve_current
       # Get current version
-      version = ENV['MNENV_VERSION']
+      version = ENV['METANORMA_VERSION']
       unless version
         # Check .metanorma-version file
         dir = Dir.pwd
@@ -181,7 +181,7 @@ module Mnenv
       end
 
       # Get current source
-      source = ENV['MNENV_SOURCE']
+      source = ENV['METANORMA_SOURCE']
       unless source
         # Check .metanorma-source file
         dir = Dir.pwd

@@ -187,10 +187,10 @@ jobs:
           Write-Host "With local override: $localOutput"
 
           # Set environment variable
-          $env:MNENV_VERSION = "1.13.9"
-          $env:MNENV_SOURCE = "gemfile"
+          $env:METANORMA_VERSION = "1.13.9"
+          $env:METANORMA_SOURCE = "gemfile"
           $envOutput = metanorma --version 2>&1
-          Write-Host "With MNENV_VERSION set: $envOutput"
+          Write-Host "With METANORMA_VERSION set: $envOutput"
 
           Write-Host "✓ Windows precedence test passed"
 

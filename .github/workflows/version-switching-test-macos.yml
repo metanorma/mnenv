@@ -142,10 +142,10 @@ jobs:
           echo "With local override: $version_from_local"
 
           # Set environment variable
-          export MNENV_VERSION=1.13.9
-          export MNENV_SOURCE=gemfile
+          export METANORMA_VERSION=1.13.9
+          export METANORMA_SOURCE=gemfile
           version_from_env=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
-          echo "With MNENV_VERSION set: $version_from_env"
+          echo "With METANORMA_VERSION set: $version_from_env"
 
           echo "✓ macOS precedence test passed"
 

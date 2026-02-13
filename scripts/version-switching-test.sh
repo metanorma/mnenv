@@ -104,16 +104,16 @@ fi
 echo ""
 log_info "=== Test 3: Shell Session Override ==="
 cd "$TEST_DIR"
-export MNENV_VERSION="${VERSIONS[1]}"
-export MNENV_SOURCE="$SOURCE"
+export METANORMA_VERSION="${VERSIONS[1]}"
+export METANORMA_SOURCE="$SOURCE"
 v_env=$(metanorma --version 2>&1 | grep -oP '\d+\.\d+\.\d+' || echo "failed")
 if [ "$v_env" = "${VERSIONS[1]}" ]; then
-    log_info "  ✓ MNENV_VERSION=${VERSIONS[1]} overrides local ${VERSIONS[0]}"
+    log_info "  ✓ METANORMA_VERSION=${VERSIONS[1]} overrides local ${VERSIONS[0]}"
 else
     log_error "  ✗ Expected ${VERSIONS[1]}, got $v_env"
     exit 1
 fi
-unset MNENV_VERSION MNENV_SOURCE
+unset METANORMA_VERSION METANORMA_SOURCE
 
 echo ""
 log_info "=== Test 4: Consecutive Switches ==="

@@ -7,9 +7,9 @@ set -e
 export MNENV_ROOT="${MNENV_ROOT:-$HOME/.mnenv}"
 
 resolve_version() {
-    # 1. Check MNENV_VERSION environment variable
-    if [ -n "$MNENV_VERSION" ]; then
-        echo "$MNENV_VERSION"
+    # 1. Check METANORMA_VERSION environment variable
+    if [ -n "$METANORMA_VERSION" ]; then
+        echo "$METANORMA_VERSION"
         return 0
     fi
 
@@ -34,9 +34,9 @@ resolve_version() {
 }
 
 resolve_source() {
-    # 1. Check MNENV_SOURCE environment variable
-    if [ -n "$MNENV_SOURCE" ]; then
-        echo "$MNENV_SOURCE"
+    # 1. Check METANORMA_SOURCE environment variable
+    if [ -n "$METANORMA_SOURCE" ]; then
+        echo "$METANORMA_SOURCE"
         return 0
     fi
 

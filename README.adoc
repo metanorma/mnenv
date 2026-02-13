@@ -12,17 +12,18 @@ mnenv is a version manager for Metanorma that allows you to:
 
 * Install and manage multiple Metanorma versions
 * Switch between versions globally, per-project, or per-shell session
-* Install from multiple sources: RubyGems (Gemfile), binary releases, Snap, Homebrew, and Chocolatey
+* Install from multiple sources: RubyGems (gemfile) or pre-built binaries
 
-Version data is fetched from the
+Version data is sourced from the
 https://github.com/metanorma/versions[metanorma/versions] repository.
 
 == Features
 
-* *Multiple Installation Sources* - Install from RubyGems, binary releases, Snap, Homebrew, or Chocolatey
+* *Multiple Installation Sources* - Install from RubyGems (gemfile) or pre-built binaries
 * *Version Switching* - Switch versions globally, per-project, or per-shell session
 * *Shell Integration* - Automatic PATH management via shims
 * *Cross-Platform* - Works on Linux, macOS, and Windows
+* *Offline Capable* - Version data cached locally for fast operation
 
 == Installation
 
@@ -41,22 +42,6 @@ git clone https://github.com/metanorma/mnenv.git
 cd mnenv
 bundle install
 bundle exec rake install
-----
-
-=== Using the installer
-
-==== Linux/macOS
-
-[source,shell]
-----
-curl -fsSL https://raw.githubusercontent.com/metanorma/mnenv/main/bin/mnenv-installer | bash
-----
-
-==== Windows (PowerShell)
-
-[source,powershell]
-----
-Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/metanorma/mnenv/main/bin/Install-Mnenv.ps1")
 ----
 
 === Shell setup
@@ -105,32 +90,43 @@ $env:PATH = "$env:USERPROFILE\.mnenv\shims;$env:PATH"
 
 [source,shell]
 ----
-mnenv available
+mnenv install --list
+# or
+mnenv install -l
 ----
 
-Shows all available Metanorma versions from all sources:
+Shows all available Metanorma versions with platform availability:
 
 ----
 Available Metanorma versions:
-(Sources: gemfile = RubyGems, binary = packed-mn binary)
-    1.14.4         (binary)
-    1.14.3         (binary)
-    1.13.9         (binary)
-    ...
+(gemfile = source build, binary = prebuilt for specific platforms)
+
+  1.14.4         (gemfile, binary [linux, macos*, windows])
+  1.14.3         (gemfile, binary [linux, macos*, windows])
+  1.14.1         (binary [linux, macos*])
+  ...
+
+Legend:
+  * Current version / platform
+  [installed: ...] = Already installed locally
+  Detected platform: macos
 ----
 
 === Install a version
 
 [source,shell]
 ----
-# Install from binary (recommended)
-mnenv install 1.14.4 --source binary
-
-# Install from RubyGems
+# Install from gemfile (source build, requires dev tools)
 mnenv install 1.14.4 --source gemfile
 
+# Install from binary (pre-built, no dev tools needed)
+mnenv install 1.14.4 --source binary
+
 # Interactive installation
-mnenv install
+mnenv install -i
+
+# List versions before installing
+mnenv install --list
 ----
 
 === List installed versions
@@ -146,6 +142,9 @@ mnenv versions
 ----
 # Set global version (affects all projects)
 mnenv global 1.14.4
+
+# Set global version with source
+mnenv global 1.14.4 --source binary
 
 # Set local version (affects current directory)
 mnenv local 1.14.4
@@ -171,85 +170,74 @@ mnenv uninstall 1.14.4 --force
 mnenv version
 ----
 
+=== Manage binary version data
+
+[source,shell]
+----
+# Refresh binary version data from GitHub
+mnenv binary refresh
+
+# Re-fetch all binary versions
+mnenv binary revamp
+
+# List binary versions
+mnenv binary list
+----
+
 == Version Sources
 
-mnenv supports multiple installation sources:
+mnenv supports two installation sources:
 
 [width="100%",cols="25%,75%"]
 |===
 | Source | Description
 
+| `gemfile`
+| RubyGems installation using Gemfile.
+Requires development tools (Ruby, bundler).
+Faster startup with lazy loading.
+
 | `binary`
 | Pre-compiled binaries from
-https://github.com/metanorma/packed-mn[packed-mn] releases (recommended)
-
-| `gemfile`
-| RubyGems installation using Gemfile from Docker images
-
-| `snap`
-| Snap packages (Linux)
-
-| `homebrew`
-| Homebrew formula (macOS)
-
-| `chocolatey`
-| Chocolatey packages (Windows)
+https://github.com/metanorma/packed-mn[packed-mn] releases.
+No development tools required.
+Full memory load at startup.
 |===
 
 == Version Resolution
 
 mnenv resolves the active version in the following order:
 
-. `MNENV_VERSION` environment variable
+. `METANORMA_VERSION` environment variable
 . `.metanorma-version` file in current directory (and parent directories)
 . `~/.mnenv/version` file (global version)
-. First installed version
 
-== Shell Completions
+The source is resolved similarly:
 
-Shell completion scripts are available in the `completions/` directory:
-
-* `completions/bash` - Bash completion
-* `completions/zsh` - Zsh completion
-* `completions/fish` - Fish completion
-* `completions/powershell.ps1` - PowerShell completion
-
-=== Installing completions
-
-==== Bash
-
-[source,shell]
-----
-source ~/.mnenv/completions/bash
-----
-
-==== Zsh
-
-[source,shell]
-----
-fpath=(~/.mnenv/completions $fpath)
-autoload -U compinit && compinit
-----
-
-==== Fish
-
-[source,shell]
-----
-ln -s ~/.mnenv/completions/fish ~/.config/fish/completions/mnenv.fish
-----
+. `METANORMA_SOURCE` environment variable
+. `.metanorma-source` file in current directory (and parent directories)
+. `~/.mnenv/source` file (global source)
+. Default: `gemfile`
 
 == Directory Structure
 
 [source]
 ----
 ~/.mnenv/
-├── versions/           # Installed Metanorma versions
+├── versions/           # Version data (cloned from metanorma/versions)
+│   └── data/
+│       ├── gemfile/versions.yaml
+│       ├── binary/versions.yaml
+│       └── ...
+├── installed/          # Installed Metanorma versions
 │   └── 1.14.4/
-│       └── bin/
-│           └── metanorma
+│       ├── bin/metanorma    # (gemfile source)
+│       ├── metanorma        # (binary source)
+│       └── source           # Records installation source
 ├── shims/              # Shim executables
 │   └── metanorma
-└── version             # Global version file
+├── version             # Global version file
+└── source              # Global source file
 ----
 
 == Architecture
@@ -259,32 +247,31 @@ mnenv follows a model-driven architecture:
 [source]
 ----
 mnenv
-├── Cli                 # Thor CLI entry point
+├── Cli                    # Thor CLI entry point
 ├── Commands/
-│   ├── AvailableCommand
-│   ├── InstallCommand
-│   ├── UninstallCommand
-│   ├── VersionCommand
-│   ├── GlobalCommand
-│   ├── LocalCommand
-│   └── UseCommand
+│   ├── InstallCommand     # Install versions
+│   ├── VersionCommand     # Version switching (global, local, use, versions)
+│   ├── UninstallCommand   # Uninstall versions
+│   └── BinaryCommand      # Manage binary version data
 ├── Installers/
-│   ├── Base            # Abstract installer
-│   ├── BinaryInstaller # Binary installation
-│   └── GemfileInstaller # Gemfile-based installation
+│   ├── Base               # Abstract installer
+│   ├── BinaryInstaller    # Binary installation (downloads, extracts)
+│   └── GemfileInstaller   # Gemfile-based installation
 ├── Shells/
-│   ├── Base            # Abstract shell
-│   ├── Bash            # Unix shells
-│   ├── PowerShell      # Windows PowerShell
-│   └── Cmd             # Windows CMD
-├── ShimManager         # Shim generation
-├── Resolver            # Version resolution
+│   ├── Base               # Abstract shell
+│   ├── Bash               # Unix shells (bash, zsh, sh)
+│   ├── PowerShell         # Windows PowerShell
+│   └── Cmd                # Windows CMD
+├── Repositories/
+│   ├── GemfileRepository  # RubyGems version data
+│   ├── BinaryRepository   # Binary version data
+│   └── ...
+├── ShimManager            # Shim generation
+├── VersionsManager        # Version data management
 └── Models/
-    ├── Version
-    ├── GemfileVersion
-    ├── SnapVersion
-    ├── HomebrewVersion
-    └── ChocolateyVersion
+    ├── ArtifactVersion    # Base version model
+    ├── GemfileVersion     # RubyGems version
+    └── BinaryVersion      # Binary version
 ----
 
 == Development
@@ -293,7 +280,7 @@ mnenv
 
 [source,shell]
 ----
-bundle exec rake test
+bundle exec rake spec
 ----
 
 Or with RSpec directly:
@@ -312,20 +299,6 @@ bundle exec rubocop
 
 # Auto-correct issues
 bundle exec rubocop -A
-----
-
-=== Running integration tests
-
-[source,shell]
-----
-# Smoke test
-./scripts/integration-test.sh
-
-# Version switching test
-./scripts/version-switching-test.sh
-
-# Cross-source switching test
-./scripts/cross-source-switching-test.sh
 ----
 
 == Contributing

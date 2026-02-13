@@ -5,7 +5,7 @@
 set -e
 
 # Configuration
-MNENV_VERSION="${MNENV_VERSION:-1.14.4}"
+METANORMA_VERSION="${METANORMA_VERSION:-1.14.4}"
 METHOD="${1:-gemfile}"
 SAMPLES_REPO="${SAMPLES_REPO:-metanorma/mn-samples-cc}"
 SAMPLES_DIR="/tmp/mn-samples-cc"
@@ -44,9 +44,9 @@ else
 fi
 
 # Install Metanorma
-log_info "Installing Metanorma ${MNENV_VERSION} (method: ${METHOD})..."
-mnenv install "${MNENV_VERSION}" --source "${METHOD}"
-mnenv global "${MNENV_VERSION}" --source "${METHOD}"
+log_info "Installing Metanorma ${METANORMA_VERSION} (method: ${METHOD})..."
+mnenv install "${METANORMA_VERSION}" --source "${METHOD}"
+mnenv global "${METANORMA_VERSION}" --source "${METHOD}"
 
 # Show installed versions
 log_info "Installed versions:"

@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  MNENV_VERSION: '1.14.3'  # Test version to install
+  METANORMA_VERSION: '1.14.3'  # Test version to install
   SAMPLES_REPO: 'metanorma/mn-samples-cc'
   SAMPLES_REF: 'main'
 
@@ -84,8 +84,8 @@ jobs:
         if: matrix.method == 'binary'
         id: check_binary
         run: |
-          echo "Checking if binary exists for version ${{ env.MNENV_VERSION }}..."
-          BINARY_URL="https://github.com/metanorma/packed-mn/releases/download/v${{ env.MNENV_VERSION }}/metanorma-linux"
+          echo "Checking if binary exists for version ${{ env.METANORMA_VERSION }}..."
+          BINARY_URL="https://github.com/metanorma/packed-mn/releases/download/v${{ env.METANORMA_VERSION }}/metanorma-linux"
           if curl -s -f -L -o /dev/null "$BINARY_URL"; then
             echo "available=true" >> $GITHUB_OUTPUT
             echo "Binary is available"
@@ -106,22 +106,22 @@ jobs:
         if: matrix.method == 'gemfile'
         run: |
           cd mnenv
-          mnenv install ${{ env.MNENV_VERSION }} --source gemfile
-          mnenv global ${{ env.MNENV_VERSION }} --source gemfile
+          mnenv install ${{ env.METANORMA_VERSION }} --source gemfile
+          mnenv global ${{ env.METANORMA_VERSION }} --source gemfile
           mnenv versions
 
       - name: Install Metanorma version (binary method)
         if: matrix.method == 'binary' && steps.check_binary.outputs.available == 'true'
         run: |
           cd mnenv
-          mnenv install ${{ env.MNENV_VERSION }} --source binary
-          mnenv global ${{ env.MNENV_VERSION }} --source binary
+          mnenv install ${{ env.METANORMA_VERSION }} --source binary
+          mnenv global ${{ env.METANORMA_VERSION }} --source binary
           mnenv versions
 
       - name: Skip binary test if binary unavailable
         if: matrix.method == 'binary' && steps.check_binary.outputs.available == 'false'
         run: |
-          echo "Binary not available for version ${{ env.MNENV_VERSION }}"
+          echo "Binary not available for version ${{ env.METANORMA_VERSION }}"
           echo "Skipping this test - will be retried when binary is published"
 
       - name: Verify metanorma is available

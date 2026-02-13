@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  MNENV_VERSION: '1.14.3'
+  METANORMA_VERSION: '1.14.3'
   SAMPLES_REPO: 'metanorma/mn-samples-cc'
   SAMPLES_REF: 'main'
 
@@ -57,8 +57,8 @@ jobs:
       - name: Install Metanorma
         working-directory: mnenv
         run: |
-          mnenv install ${{ env.MNENV_VERSION }} --source ${{ matrix.method }}
-          mnenv global ${{ env.MNENV_VERSION }} --source ${{ matrix.method }}
+          mnenv install ${{ env.METANORMA_VERSION }} --source ${{ matrix.method }}
+          mnenv global ${{ env.METANORMA_VERSION }} --source ${{ matrix.method }}
           mnenv versions
 
       - name: Add mnenv to PATH
@@ -91,7 +91,7 @@ jobs:
 
           Write-Host ""
           Write-Host "=== Checking specific bin directories ==="
-          $binDir = "$env:USERPROFILE\.mnenv\versions\${{ env.MNENV_VERSION }}\bin"
+          $binDir = "$env:USERPROFILE\.mnenv\versions\${{ env.METANORMA_VERSION }}\bin"
           Write-Host "Checking: $binDir"
           if (Test-Path $binDir) {
             Get-ChildItem $binDir | ForEach-Object { Write-Host "  $($_.Name)" }

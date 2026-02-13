@@ -30,8 +30,8 @@ module Mnenv
           set "SOURCE="
 
           rem Check environment variables first
-          if defined MNENV_VERSION set "VERSION=%MNENV_VERSION%"
-          if defined MNENV_SOURCE set "SOURCE=%MNENV_SOURCE%"
+          if defined METANORMA_VERSION set "VERSION=%METANORMA_VERSION%"
+          if defined METANORMA_SOURCE set "SOURCE=%METANORMA_SOURCE%"
 
           rem Check local .metanorma-version file
           if not defined VERSION (
@@ -90,8 +90,8 @@ module Mnenv
 
       def use_output(version, source)
         lines = []
-        lines << "set MNENV_VERSION=#{version}"
-        lines << "set MNENV_SOURCE=#{source}" if source
+        lines << "set METANORMA_VERSION=#{version}"
+        lines << "set METANORMA_SOURCE=#{source}" if source
         lines << 'rem Run this in your CMD session'
         lines.join("\n")
       end

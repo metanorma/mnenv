@@ -58,8 +58,8 @@ module Mnenv
 
       def use_output(version, source)
         lines = []
-        lines << "export MNENV_VERSION=#{version}"
-        lines << "export MNENV_SOURCE=#{source}" if source
+        lines << "export METANORMA_VERSION=#{version}"
+        lines << "export METANORMA_SOURCE=#{source}" if source
         lines << "# Run this in your shell, or use: eval \"$(mnenv use #{version}#{" --source #{source}" if source})\""
         lines.join("\n")
       end

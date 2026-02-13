@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  MNENV_VERSION: '1.14.3'
+  METANORMA_VERSION: '1.14.3'
   SAMPLES_REPO: 'metanorma/mn-samples-cc'
   SAMPLES_REF: 'main'
 
@@ -53,8 +53,8 @@ jobs:
 
       - name: Install Metanorma
         run: |
-          mnenv install ${{ env.MNENV_VERSION }} --source gemfile
-          mnenv global ${{ env.MNENV_VERSION }} --source gemfile
+          mnenv install ${{ env.METANORMA_VERSION }} --source gemfile
+          mnenv global ${{ env.METANORMA_VERSION }} --source gemfile
           mnenv versions
 
       - name: Verify metanorma is available

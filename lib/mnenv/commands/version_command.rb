@@ -20,8 +20,8 @@ module Mnenv
     def use(version = nil)
       version, source = resolve_version_and_source(version, options[:source], options[:interactive])
 
-      puts "export MNENV_VERSION=#{version}"
-      puts "export MNENV_SOURCE=#{source}" if source
+      puts "export METANORMA_VERSION=#{version}"
+      puts "export METANORMA_SOURCE=#{source}" if source
       puts "# Run this in your shell, or use: eval \"$(mnenv use #{version}#{" --source #{source}" if source})\""
     end
 
@@ -188,7 +188,7 @@ module Mnenv
     end
 
     def resolve_version
-      return ENV['MNENV_VERSION'] if ENV['MNENV_VERSION']
+      return ENV['METANORMA_VERSION'] if ENV['METANORMA_VERSION']
 
       dir = Dir.pwd
       loop do
@@ -207,7 +207,7 @@ module Mnenv
     end
 
     def resolve_source
-      return ENV['MNENV_SOURCE'] if ENV['MNENV_SOURCE']
+      return ENV['METANORMA_SOURCE'] if ENV['METANORMA_SOURCE']
 
       dir = Dir.pwd
       loop do

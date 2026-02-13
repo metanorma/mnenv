@@ -26,8 +26,8 @@ module Mnenv
           $sourceFile = "$MNENV_ROOT\\source"
 
           # Check environment variables first
-          $VERSION = $env:MNENV_VERSION
-          $SOURCE = $env:MNENV_SOURCE
+          $VERSION = $env:METANORMA_VERSION
+          $SOURCE = $env:METANORMA_SOURCE
 
           # Check local .metanorma-version file
           if (-not $VERSION) {
@@ -92,8 +92,8 @@ module Mnenv
 
       def use_output(version, source)
         lines = []
-        lines << "$env:MNENV_VERSION = '#{version}'"
-        lines << "$env:MNENV_SOURCE = '#{source}'" if source
+        lines << "$env:METANORMA_VERSION = '#{version}'"
+        lines << "$env:METANORMA_SOURCE = '#{source}'" if source
         lines << '# Run this in your PowerShell session'
         lines.join("\n")
       end
