@@ -72,7 +72,7 @@ module Mnenv
           }
 
           # Determine executable path based on source
-          # Installed versions are in $MNENV_ROOT\installed\<version>\
+          # Installed versions are in $MNENV_ROOT\\installed\\$VERSION
           if ($SOURCE -eq "binary") {
             $EXECUTABLE = "$MNENV_ROOT\\installed\\$VERSION\\metanorma.exe"
           } else {
