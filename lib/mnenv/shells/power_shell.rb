@@ -31,8 +31,9 @@ module Mnenv
 
           # Check local .metanorma-version file
           if (-not $VERSION) {
-            $dir = Get-Location
-            while ($dir -and $dir.Path -ne $dir.Root) {
+            $dir = (Get-Location).Path
+            $root = [System.IO.Path]::GetPathRoot($dir)
+            while ($dir -and $dir -ne $root) {
               $localVersionFile = Join-Path $dir ".metanorma-version"
               if (Test-Path $localVersionFile) {
                 $VERSION = Get-Content $localVersionFile -Raw
