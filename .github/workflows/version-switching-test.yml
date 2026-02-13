@@ -11,6 +11,8 @@ permissions:
 
 env:
   VERSIONS: '1.13.9 1.14.3'
+  SAMPLES_REPO: 'metanorma/mn-samples-cc'
+  SAMPLES_REF: 'main'
 
 jobs:
   version-switching:
@@ -23,11 +25,24 @@ jobs:
         with:
           path: mnenv
 
+      - name: Checkout mn-samples-cc
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SAMPLES_REPO }}
+          ref: ${{ env.SAMPLES_REF }}
+          path: samples
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
           bundler-cache: true
+          working-directory: mnenv
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-liberation plantuml
 
       - name: Install mnenv
         working-directory: mnenv
@@ -51,7 +66,6 @@ jobs:
 
       - name: Test global version switching
         run: |
-          # Set up mnenv in PATH
           export PATH="$HOME/.mnenv/shims:$PATH"
 
           echo "=== Testing global version switching ==="
@@ -82,7 +96,6 @@ jobs:
 
       - name: Test local version override
         run: |
-          # Set up mnenv in PATH
           export PATH="$HOME/.mnenv/shims:$PATH"
 
           echo "=== Testing local version override ==="
@@ -119,6 +132,38 @@ jobs:
           fi
 
           echo "✓ Local version override test passed"
+
+      - name: Test document compilation with version switching
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+
+          echo "=== Testing document compilation with version switching ==="
+
+          # Test with version 1.13.9
+          mnenv global 1.13.9 --source gemfile
+          echo "Compiling with version 1.13.9..."
+          metanorma compile sources/cc-18011.adoc
+          if [ -f "sources/cc-18011.xml" ]; then
+            echo "✓ Document compiled with 1.13.9"
+            rm -f sources/cc-18011.xml sources/cc-18011.html
+          else
+            echo "✗ Document compilation failed with 1.13.9"
+            exit 1
+          fi
+
+          # Test with version 1.14.3
+          mnenv global 1.14.3 --source gemfile
+          echo "Compiling with version 1.14.3..."
+          metanorma compile sources/cc-18011.adoc
+          if [ -f "sources/cc-18011.xml" ]; then
+            echo "✓ Document compiled with 1.14.3"
+          else
+            echo "✗ Document compilation failed with 1.14.3"
+            exit 1
+          fi
+
+          echo "✓ Document compilation test passed"
 
       - name: Display final state
         if: always()

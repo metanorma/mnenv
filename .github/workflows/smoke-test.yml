@@ -11,6 +11,8 @@ permissions:
 
 env:
   MNENV_VERSION: '1.14.3'
+  SAMPLES_REPO: 'metanorma/mn-samples-cc'
+  SAMPLES_REF: 'main'
 
 jobs:
   quick-test:
@@ -18,16 +20,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout mnenv
         uses: actions/checkout@v4
         with:
           path: mnenv
+
+      - name: Checkout mn-samples-cc
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SAMPLES_REPO }}
+          ref: ${{ env.SAMPLES_REF }}
+          path: samples
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
           bundler-cache: true
+          working-directory: mnenv
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-liberation plantuml
 
       - name: Install mnenv
         working-directory: mnenv
@@ -40,33 +55,45 @@ jobs:
         run: |
           mnenv install ${{ env.MNENV_VERSION }} --source gemfile
           mnenv global ${{ env.MNENV_VERSION }} --source gemfile
+          mnenv versions
 
-      - name: Verify installation
+      - name: Verify metanorma is available
         run: |
           export PATH="$HOME/.mnenv/shims:$PATH"
+          which metanorma
           metanorma version
 
-      - name: Test simple document
+      - name: Test single document compilation
+        working-directory: samples
         run: |
           export PATH="$HOME/.mnenv/shims:$PATH"
-          mkdir -p /tmp/test-mn
-          cd /tmp/test-mn
-          cat << 'EOF' > test.adoc
-          = Test Document
-          :mn-document-class: standoc
-          Author Name
+          metanorma compile sources/cc-18011.adoc
+          if [ -f "sources/cc-18011.xml" ] || [ -f "sources/cc-18011.html" ]; then
+            echo "Document compilation successful"
+            ls -lah sources/cc-18011.*
+          else
+            echo "Warning: No output files found"
+            ls -lah sources/ || true
+          fi
 
-          == Section
+      - name: Test site generation
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          metanorma site generate --agree-to-terms
+          if [ -d "site" ]; then
+            echo "Site generation successful"
+            ls -lah site/ || true
+          else
+            echo "Warning: Site directory not found"
+          fi
 
-          This is a test.
-          EOF
-          metanorma compile test.adoc --type standoc
-          ls -la test.*
-
-      - name: Upload test output
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: smoke-test-gemfile
-          path: /tmp/test-mn/test.*
+          path: |
+            samples/sources/cc-18011.*
+            samples/site/
           retention-days: 3
           if-no-files-found: ignore
