@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'version'
+require_relative '../versions_manager'
 
 module Mnenv
   class GemfileVersion < ArtifactVersion
@@ -17,7 +18,9 @@ module Mnenv
       map 'gemfile_lock_path', to: :gemfile_lock_path
     end
 
-    def data_dir = @data_dir ||= default_data_dir
+    def data_dir
+      @data_dir ||= File.join(VersionsManager.new.data_path, 'gemfile')
+    end
 
     def directory_path = File.join(data_dir, "v#{version}")
 
@@ -37,12 +40,6 @@ module Mnenv
         'gemfile_path' => gemfile_path,
         'gemfile_lock_path' => gemfile_lock_path
       )
-    end
-
-    private
-
-    def default_data_dir
-      @default_data_dir ||= File.join(__dir__, '..', '..', '..', 'data', 'gemfile')
     end
   end
 end
