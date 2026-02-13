@@ -1,0 +1,20 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  SuggestExtensions: false
+
+# open-uri's URI.open is safe for reading URLs
+Security/Open:
+  Exclude:
+    - lib/mnenv/repository.rb
+    - lib/mnenv/binary_repository.rb
+
+# Spec files can be longer
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*.rb
+
+# CLI classes tend to be longer due to many commands
+Metrics/ClassLength:
+  Exclude:
+    - lib/mnenv/cli.rb

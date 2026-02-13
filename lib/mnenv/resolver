@@ -1,0 +1,72 @@
+#!/bin/bash
+# Version and source resolver for mnenv shims
+# Usage: ./resolver "version" | ./resolver "source"
+
+set -e
+
+export MNENV_ROOT="${MNENV_ROOT:-$HOME/.mnenv}"
+
+resolve_version() {
+    # 1. Check MNENV_VERSION environment variable
+    if [ -n "$MNENV_VERSION" ]; then
+        echo "$MNENV_VERSION"
+        return 0
+    fi
+
+    # 2. Check .metanorma-version file (walk up directory tree)
+    local dir="$PWD"
+    while [ -n "$dir" ] && [ "$dir" != "/" ]; do
+        if [ -f "$dir/.metanorma-version" ]; then
+            cat "$dir/.metanorma-version"
+            return 0
+        fi
+        dir="${dir%/*}"
+    done
+
+    # 3. Check ~/.mnenv/version (global default)
+    if [ -f "$MNENV_ROOT/version" ]; then
+        cat "$MNENV_ROOT/version"
+        return 0
+    fi
+
+    # 4. No version found
+    return 1
+}
+
+resolve_source() {
+    # 1. Check MNENV_SOURCE environment variable
+    if [ -n "$MNENV_SOURCE" ]; then
+        echo "$MNENV_SOURCE"
+        return 0
+    fi
+
+    # 2. Check .metanorma-source file (walk up directory tree)
+    local dir="$PWD"
+    while [ -n "$dir" ] && [ "$dir" != "/" ]; do
+        if [ -f "$dir/.metanorma-source" ]; then
+            cat "$dir/.metanorma-source"
+            return 0
+        fi
+        dir="${dir%/*}"
+    done
+
+    # 3. Check ~/.mnenv/source (global default)
+    if [ -f "$MNENV_ROOT/source" ]; then
+        cat "$MNENV_ROOT/source"
+        return 0
+    fi
+
+    # 4. Default to gemfile (faster for devs)
+    echo "gemfile"
+    return 0
+}
+
+# Main dispatch
+case "$1" in
+    version) resolve_version ;;
+    source)  resolve_source ;;
+    *)
+        echo "Usage: $0 {version|source}" >&2
+        exit 1
+        ;;
+esac

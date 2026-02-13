@@ -1,0 +1,224 @@
+name: Version Switching Tests (Windows)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  VERSIONS: '1.13.9 1.14.3'
+
+jobs:
+  version-switching-windows:
+    name: Windows Version Switching
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Install mnenv
+        run: |
+          cd mnenv
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install Metanorma versions (gemfile)
+        run: |
+          $versions = "$env:VERSIONS".Split()
+          foreach ($version in $versions) {
+            Write-Host "Installing Metanorma gemfile version: $version"
+            mnenv install $version --source gemfile
+          }
+          mnenv versions
+
+      - name: Add mnenv to PATH
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+          echo "$env:USERPROFILE\.mnenv\shims" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+          # Debug: Check shims directory
+          Write-Host "=== Shims directory contents ==="
+          if (Test-Path "$env:USERPROFILE\.mnenv\shims") {
+            Get-ChildItem "$env:USERPROFILE\.mnenv\shims" -ErrorAction SilentlyContinue
+          } else {
+            Write-Host "Shims directory does not exist!"
+          }
+
+          Write-Host ""
+          Write-Host "=== Version directory contents ==="
+          if (Test-Path "$env:USERPROFILE\.mnenv\versions") {
+            Get-ChildItem "$env:USERPROFILE\.mnenv\versions" -ErrorAction SilentlyContinue
+
+            Write-Host ""
+            Write-Host "=== Contents of each version directory ==="
+            Get-ChildItem "$env:USERPROFILE\.mnenv\versions" -Directory | ForEach-Object {
+              Write-Host "--- Version: $($_.Name) ---"
+              Get-ChildItem $_.FullName -Recurse -Depth 2 | Select-Object FullName
+            }
+          } else {
+            Write-Host "Versions directory does not exist!"
+          }
+
+          Write-Host ""
+          Write-Host "=== Checking specific bin directories ==="
+          foreach ($version in "$env:VERSIONS".Split()) {
+            $binDir = "$env:USERPROFILE\.mnenv\versions\$version\bin"
+            Write-Host "Checking: $binDir"
+            if (Test-Path $binDir) {
+              Get-ChildItem $binDir | ForEach-Object { Write-Host "  $($_.Name)" }
+            } else {
+              Write-Host "  bin directory does not exist!"
+            }
+          }
+
+      - name: Test global version switching
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+
+          Write-Host "=== Testing global version switching ==="
+
+          # Set and verify first version
+          mnenv global 1.13.9 --source gemfile
+          $output = metanorma --version 2>&1
+          Write-Host "metanorma --version output: $output"
+
+          if ($output -match "1\.13\.9") {
+            Write-Host "✓ Global version 1.13.9 verified"
+          } else {
+            Write-Host "✗ Expected 1.13.9"
+            exit 1
+          }
+
+          # Switch to second version
+          mnenv global 1.14.3 --source gemfile
+          $output = metanorma --version 2>&1
+          Write-Host "metanorma --version output: $output"
+
+          if ($output -match "1\.14\.3") {
+            Write-Host "✓ Global version 1.14.3 verified"
+          } else {
+            Write-Host "✗ Expected 1.14.3"
+            exit 1
+          }
+
+          Write-Host "✓ Windows global version switching test passed"
+
+      - name: Test local version override
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+
+          Write-Host "=== Testing local version override ==="
+
+          # Set global to 1.14.3
+          mnenv global 1.14.3 --source gemfile
+          $globalOutput = metanorma --version 2>&1
+          Write-Host "Global version output: $globalOutput"
+
+          # Create test directory and set local version
+          New-Item -ItemType Directory -Path "C:\test-project" -Force | Out-Null
+          Set-Location "C:\test-project"
+          mnenv local 1.13.9 --source gemfile
+
+          # Verify local override works
+          $localOutput = metanorma --version 2>&1
+          Write-Host "Local version in C:\test-project: $localOutput"
+
+          if ($localOutput -match "1\.13\.9") {
+            Write-Host "✓ Local version 1.13.9 overrides global 1.14.3"
+          } else {
+            Write-Host "✗ Expected 1.13.9"
+            exit 1
+          }
+
+          # Verify global still applies outside local directory
+          Set-Location "C:\"
+          $outsideOutput = metanorma --version 2>&1
+          Write-Host "Version outside C:\test-project: $outsideOutput"
+
+          if ($outsideOutput -match "1\.14\.3") {
+            Write-Host "✓ Global version 1.14.3 restored outside project directory"
+          } else {
+            Write-Host "✗ Expected 1.14.3"
+            exit 1
+          }
+
+          Write-Host "✓ Windows local version override test passed"
+
+      - name: Test version file precedence
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+
+          Write-Host "=== Testing version file precedence ==="
+
+          # Clean slate
+          if (Test-Path "$env:USERPROFILE\.mnenv\version") { Remove-Item "$env:USERPROFILE\.mnenv\version" }
+          if (Test-Path "$env:USERPROFILE\.mnenv\source") { Remove-Item "$env:USERPROFILE\.mnenv\source" }
+
+          New-Item -ItemType Directory -Path "C:\precedence-test\subdir" -Force | Out-Null
+
+          # Set global version
+          mnenv global 1.13.9 --source gemfile
+          Set-Location "C:\precedence-test\subdir"
+
+          $globalOutput = metanorma --version 2>&1
+          Write-Host "With only global set: $globalOutput"
+
+          # Set local version
+          mnenv local 1.14.3 --source gemfile
+          $localOutput = metanorma --version 2>&1
+          Write-Host "With local override: $localOutput"
+
+          # Set environment variable
+          $env:MNENV_VERSION = "1.13.9"
+          $env:MNENV_SOURCE = "gemfile"
+          $envOutput = metanorma --version 2>&1
+          Write-Host "With MNENV_VERSION set: $envOutput"
+
+          Write-Host "✓ Windows precedence test passed"
+
+      - name: Display final state
+        if: always()
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+
+          Write-Host "=== Final mnenv state ==="
+          Write-Host "Installed versions:"
+          mnenv versions
+
+          Write-Host ""
+          Write-Host "Current metanorma version:"
+          metanorma --version
+
+          Write-Host ""
+          Write-Host "Global version file:"
+          if (Test-Path "$env:USERPROFILE\.mnenv\version") {
+            Get-Content "$env:USERPROFILE\.mnenv\version"
+          } else {
+            Write-Host "Not set"
+          }
+
+          Write-Host ""
+          Write-Host "Global source file:"
+          if (Test-Path "$env:USERPROFILE\.mnenv\source") {
+            Get-Content "$env:USERPROFILE\.mnenv\source"
+          } else {
+            Write-Host "Not set"
+          }

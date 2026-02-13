@@ -1,0 +1,346 @@
+= mnenv
+
+image:https://img.shields.io/gem/v/mnenv.svg[RubyGems Version]
+image:https://img.shields.io/github/license/metanorma/mnenv.svg[License]
+image:https://github.com/metanorma/mnenv/actions/workflows/rake.yml/badge.svg["Build", link="https://github.com/metanorma/mnenv/actions/workflows/rake.yml"]
+
+Version manager for Metanorma, similar to rbenv/pyenv.
+
+== Purpose
+
+mnenv is a version manager for Metanorma that allows you to:
+
+* Install and manage multiple Metanorma versions
+* Switch between versions globally, per-project, or per-shell session
+* Install from multiple sources: RubyGems (Gemfile), binary releases, Snap, Homebrew, and Chocolatey
+
+Version data is fetched from the
+https://github.com/metanorma/versions[metanorma/versions] repository.
+
+== Features
+
+* *Multiple Installation Sources* - Install from RubyGems, binary releases, Snap, Homebrew, or Chocolatey
+* *Version Switching* - Switch versions globally, per-project, or per-shell session
+* *Shell Integration* - Automatic PATH management via shims
+* *Cross-Platform* - Works on Linux, macOS, and Windows
+
+== Installation
+
+=== As a Ruby gem
+
+[source,shell]
+----
+gem install mnenv
+----
+
+=== From source
+
+[source,shell]
+----
+git clone https://github.com/metanorma/mnenv.git
+cd mnenv
+bundle install
+bundle exec rake install
+----
+
+=== Using the installer
+
+==== Linux/macOS
+
+[source,shell]
+----
+curl -fsSL https://raw.githubusercontent.com/metanorma/mnenv/main/bin/mnenv-installer | bash
+----
+
+==== Windows (PowerShell)
+
+[source,powershell]
+----
+Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/metanorma/mnenv/main/bin/Install-Mnenv.ps1")
+----
+
+=== Shell setup
+
+After installation, add mnenv shims to your PATH:
+
+==== Bash
+
+Add to `~/.bashrc`:
+
+[source,shell]
+----
+export PATH="$HOME/.mnenv/shims:$PATH"
+----
+
+==== Zsh
+
+Add to `~/.zshrc`:
+
+[source,shell]
+----
+export PATH="$HOME/.mnenv/shims:$PATH"
+----
+
+==== Fish
+
+Add to `~/.config/fish/config.fish`:
+
+[source,shell]
+----
+set -gx PATH $HOME/.mnenv/shims $PATH
+----
+
+==== PowerShell (Windows)
+
+Add to your PowerShell profile:
+
+[source,powershell]
+----
+$env:PATH = "$env:USERPROFILE\.mnenv\shims;$env:PATH"
+----
+
+== Usage
+
+=== List available versions
+
+[source,shell]
+----
+mnenv available
+----
+
+Shows all available Metanorma versions from all sources:
+
+----
+Available Metanorma versions:
+(Sources: gemfile = RubyGems, binary = packed-mn binary)
+    1.14.4         (binary)
+    1.14.3         (binary)
+    1.13.9         (binary)
+    ...
+----
+
+=== Install a version
+
+[source,shell]
+----
+# Install from binary (recommended)
+mnenv install 1.14.4 --source binary
+
+# Install from RubyGems
+mnenv install 1.14.4 --source gemfile
+
+# Interactive installation
+mnenv install
+----
+
+=== List installed versions
+
+[source,shell]
+----
+mnenv versions
+----
+
+=== Set version
+
+[source,shell]
+----
+# Set global version (affects all projects)
+mnenv global 1.14.4
+
+# Set local version (affects current directory)
+mnenv local 1.14.4
+
+# Set shell version (affects current shell session only)
+mnenv use 1.14.4
+----
+
+=== Uninstall a version
+
+[source,shell]
+----
+mnenv uninstall 1.14.4
+
+# Force uninstall without confirmation
+mnenv uninstall 1.14.4 --force
+----
+
+=== Show mnenv version
+
+[source,shell]
+----
+mnenv version
+----
+
+== Version Sources
+
+mnenv supports multiple installation sources:
+
+[width="100%",cols="25%,75%"]
+|===
+| Source | Description
+
+| `binary`
+| Pre-compiled binaries from
+https://github.com/metanorma/packed-mn[packed-mn] releases (recommended)
+
+| `gemfile`
+| RubyGems installation using Gemfile from Docker images
+
+| `snap`
+| Snap packages (Linux)
+
+| `homebrew`
+| Homebrew formula (macOS)
+
+| `chocolatey`
+| Chocolatey packages (Windows)
+|===
+
+== Version Resolution
+
+mnenv resolves the active version in the following order:
+
+. `MNENV_VERSION` environment variable
+. `.metanorma-version` file in current directory (and parent directories)
+. `~/.mnenv/version` file (global version)
+. First installed version
+
+== Shell Completions
+
+Shell completion scripts are available in the `completions/` directory:
+
+* `completions/bash` - Bash completion
+* `completions/zsh` - Zsh completion
+* `completions/fish` - Fish completion
+* `completions/powershell.ps1` - PowerShell completion
+
+=== Installing completions
+
+==== Bash
+
+[source,shell]
+----
+source ~/.mnenv/completions/bash
+----
+
+==== Zsh
+
+[source,shell]
+----
+fpath=(~/.mnenv/completions $fpath)
+autoload -U compinit && compinit
+----
+
+==== Fish
+
+[source,shell]
+----
+ln -s ~/.mnenv/completions/fish ~/.config/fish/completions/mnenv.fish
+----
+
+== Directory Structure
+
+[source]
+----
+~/.mnenv/
+├── versions/           # Installed Metanorma versions
+│   └── 1.14.4/
+│       └── bin/
+│           └── metanorma
+├── shims/              # Shim executables
+│   └── metanorma
+└── version             # Global version file
+----
+
+== Architecture
+
+mnenv follows a model-driven architecture:
+
+[source]
+----
+mnenv
+├── Cli                 # Thor CLI entry point
+├── Commands/
+│   ├── AvailableCommand
+│   ├── InstallCommand
+│   ├── UninstallCommand
+│   ├── VersionCommand
+│   ├── GlobalCommand
+│   ├── LocalCommand
+│   └── UseCommand
+├── Installers/
+│   ├── Base            # Abstract installer
+│   ├── BinaryInstaller # Binary installation
+│   └── GemfileInstaller # Gemfile-based installation
+├── Shells/
+│   ├── Base            # Abstract shell
+│   ├── Bash            # Unix shells
+│   ├── PowerShell      # Windows PowerShell
+│   └── Cmd             # Windows CMD
+├── ShimManager         # Shim generation
+├── Resolver            # Version resolution
+└── Models/
+    ├── Version
+    ├── GemfileVersion
+    ├── SnapVersion
+    ├── HomebrewVersion
+    └── ChocolateyVersion
+----
+
+== Development
+
+=== Running tests
+
+[source,shell]
+----
+bundle exec rake test
+----
+
+Or with RSpec directly:
+
+[source,shell]
+----
+bundle exec rspec
+----
+
+=== Code quality
+
+[source,shell]
+----
+# Run Rubocop
+bundle exec rubocop
+
+# Auto-correct issues
+bundle exec rubocop -A
+----
+
+=== Running integration tests
+
+[source,shell]
+----
+# Smoke test
+./scripts/integration-test.sh
+
+# Version switching test
+./scripts/version-switching-test.sh
+
+# Cross-source switching test
+./scripts/cross-source-switching-test.sh
+----
+
+== Contributing
+
+. Fork the repository
+. Create your feature branch (`git checkout -b my-amazing-feature`)
+. Commit your changes (`git commit -am 'Add some amazing feature'`)
+. Push to the branch (`git push origin my-amazing-feature`)
+. Open a Pull Request
+
+== License
+
+This project is available as open source under the terms of the
+https://opensource.org/licenses/MIT[MIT License].
+
+== Copyright
+
+Copyright (c) 2025 Ribose Inc.

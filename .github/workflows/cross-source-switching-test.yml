@@ -1,0 +1,85 @@
+name: Cross-Source Version Switching Tests
+
+on:
+  push:
+    branches: [main, test-gha-workflows]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TEST_VERSION: '1.14.3'
+
+jobs:
+  cross-source-switching:
+    name: Cross-Source Switching (ubuntu)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Install mnenv
+        working-directory: mnenv
+        run: |
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Check binary availability
+        id: check_binary
+        run: |
+          BINARY_URL="https://github.com/metanorma/packed-mn/releases/download/v${{ env.TEST_VERSION }}/metanorma-linux"
+          if curl -s -f -L -o /dev/null "$BINARY_URL"; then
+            echo "available=true" >> $GITHUB_OUTPUT
+            echo "Binary is available for version ${{ env.TEST_VERSION }}"
+          else
+            echo "available=false" >> $GITHUB_OUTPUT
+            echo "Binary not found for version ${{ env.TEST_VERSION }}"
+          fi
+
+      - name: Install same version with gemfile
+        run: |
+          mnenv install ${{ env.TEST_VERSION }} --source gemfile
+          echo "Gemfile installation:"
+          ls -lah ~/.mnenv/versions/${{ env.TEST_VERSION }}/
+
+      - name: Install same version with binary
+        if: steps.check_binary.outputs.available == 'true'
+        run: |
+          mnenv install ${{ env.TEST_VERSION }} --source binary
+          echo "Both installations:"
+          ls -lah ~/.mnenv/versions/${{ env.TEST_VERSION }}/
+
+      - name: Test gemfile version works
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          mnenv global ${{ env.TEST_VERSION }} --source gemfile
+          metanorma --version
+
+      - name: Display final state
+        if: always()
+        run: |
+          echo "=== Final mnenv state ==="
+          export PATH="$HOME/.mnenv/shims:$PATH"
+
+          echo "Installed versions:"
+          mnenv versions
+
+          echo ""
+          echo "Version directories:"
+          ls -lah ~/.mnenv/versions/ 2>/dev/null || echo "No versions installed"
+
+          echo ""
+          echo "Current metanorma:"
+          metanorma --version 2>&1 || echo "Not available"

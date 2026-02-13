@@ -1,0 +1,47 @@
+# Mnenv Bash completion
+
+_mnenv_install() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local versions=$(/Users/mulgogi/.gem/ruby/3.3.0/bin/mnenv gemfile list 2>/dev/null | grep -E '^v[0-9]' | awk '{print $1}')
+    COMPREPLY=($(compgen -W "$versions --list --interactive" -- "$cur"))
+}
+
+_mnenv_use() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local versions=$(ls -1 ~/.mnenv/versions/ 2>/dev/null)
+    COMPREPLY=($(compgen -W "$versions --interactive" -- "$cur"))
+}
+
+_mnenv_global() {
+    _mnenv_use
+}
+
+_mnenv_local() {
+    _mnenv_use
+}
+
+_mnenv_uninstall() {
+    _mnenv_use
+}
+
+_mnenv() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local commands="install use global local versions uninstall help gemfile snap homebrew chocolatey info list list-all version"
+
+    case "$prev" in
+        install) _mnenv_install ;;
+        use) _mnenv_use ;;
+        global) _mnenv_global ;;
+        local) _mnenv_local ;;
+        uninstall) _mnenv_uninstall ;;
+        *) COMPREPLY=($(compgen -W "$commands" -- "$cur")) ;;
+    esac
+}
+
+complete -F _mnenv mnenv
+
+# Add ~/.mnenv/shims to PATH if not already present
+if [[ ":$PATH:" != *":$HOME/.mnenv/shims:"* ]]; then
+    export PATH="$HOME/.mnenv/shims:$PATH"
+fi

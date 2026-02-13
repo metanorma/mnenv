@@ -1,0 +1,174 @@
+name: Integration Tests (mn-samples-cc)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MNENV_VERSION: '1.14.3'  # Test version to install
+  SAMPLES_REPO: 'metanorma/mn-samples-cc'
+  SAMPLES_REF: 'main'
+
+jobs:
+  test:
+    name: ${{ matrix.os }} - ${{ matrix.method }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        method: [gemfile]
+        include:
+          # Test binary on Ubuntu when binary is available
+          - os: ubuntu-latest
+            method: binary
+            binary_available: true
+          # TODO: Add macOS and Windows when binary binaries are available
+          # - os: macos-latest
+          #   method: gemfile
+          # - os: macos-latest
+          #   method: binary
+          #   binary_available: false  # Skip until binary available
+          # - os: windows-latest
+          #   method: gemfile
+          # - os: windows-latest
+          #   method: binary
+          #   binary_available: false  # Skip until binary available
+
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Checkout mn-samples-cc
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SAMPLES_REPO }}
+          ref: ${{ env.SAMPLES_REF }}
+          path: samples
+
+      - name: Set up Ruby (for gemfile method)
+        if: matrix.method == 'gemfile'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-liberation plantuml
+
+      - name: Install LaTeX (for PDF output)
+        continue-on-error: true
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-extra fonts-freefont-ttf
+
+      - name: Install mnenv (gemfile method)
+        if: matrix.method == 'gemfile'
+        run: |
+          cd mnenv
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Check binary availability
+        if: matrix.method == 'binary'
+        id: check_binary
+        run: |
+          echo "Checking if binary exists for version ${{ env.MNENV_VERSION }}..."
+          BINARY_URL="https://github.com/metanorma/packed-mn/releases/download/v${{ env.MNENV_VERSION }}/metanorma-linux"
+          if curl -s -f -L -o /dev/null "$BINARY_URL"; then
+            echo "available=true" >> $GITHUB_OUTPUT
+            echo "Binary is available"
+          else
+            echo "available=false" >> $GITHUB_OUTPUT
+            echo "Binary not found, marking as skipped"
+          fi
+
+      - name: Install mnenv (binary method)
+        if: matrix.method == 'binary' && steps.check_binary.outputs.available == 'true'
+        run: |
+          cd mnenv
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install Metanorma version (gemfile method)
+        if: matrix.method == 'gemfile'
+        run: |
+          cd mnenv
+          mnenv install ${{ env.MNENV_VERSION }} --source gemfile
+          mnenv global ${{ env.MNENV_VERSION }} --source gemfile
+          mnenv versions
+
+      - name: Install Metanorma version (binary method)
+        if: matrix.method == 'binary' && steps.check_binary.outputs.available == 'true'
+        run: |
+          cd mnenv
+          mnenv install ${{ env.MNENV_VERSION }} --source binary
+          mnenv global ${{ env.MNENV_VERSION }} --source binary
+          mnenv versions
+
+      - name: Skip binary test if binary unavailable
+        if: matrix.method == 'binary' && steps.check_binary.outputs.available == 'false'
+        run: |
+          echo "Binary not available for version ${{ env.MNENV_VERSION }}"
+          echo "Skipping this test - will be retried when binary is published"
+
+      - name: Verify metanorma is available
+        if: matrix.method == 'gemfile' || (matrix.method == 'binary' && steps.check_binary.outputs.available == 'true')
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          which metanorma
+          metanorma version
+
+      - name: Test single document compilation
+        if: matrix.method == 'gemfile' || (matrix.method == 'binary' && steps.check_binary.outputs.available == 'true')
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          metanorma compile sources/cc-18011.adoc
+          # Check if output was created
+          if [ -f "sources/cc-18011.xml" ] || [ -f "sources/cc-18011.html" ] || [ -f "sources/cc-18011.pdf" ]; then
+            echo "Document compilation successful"
+            ls -lah sources/cc-18011.*
+          else
+            echo "Document compilation may have failed - no output files found"
+            ls -lah sources/ || true
+          fi
+
+      - name: Test site generation
+        if: matrix.method == 'gemfile' || (matrix.method == 'binary' && steps.check_binary.outputs.available == 'true')
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          metanorma site generate --agree-to-terms
+          # Check if site was generated
+          if [ -d "site" ]; then
+            echo "Site generation successful"
+            echo "Site contents:"
+            ls -lah site/ || true
+            find site -type f | head -20 || true
+          else
+            echo "Site generation may have failed - no site directory found"
+          fi
+
+      - name: Upload compilation artifacts
+        if: matrix.method == 'gemfile' || (matrix.method == 'binary' && steps.check_binary.outputs.available == 'true')
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.os }}-${{ matrix.method }}
+          path: |
+            samples/sources/cc-18011.*
+            samples/site/
+          retention-days: 7
+          if-no-files-found: warn

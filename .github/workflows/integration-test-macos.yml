@@ -1,0 +1,101 @@
+name: macOS Integration Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MNENV_VERSION: '1.14.3'
+  SAMPLES_REPO: 'metanorma/mn-samples-cc'
+  SAMPLES_REF: 'main'
+
+jobs:
+  test-macos:
+    name: macOS - ${{ matrix.method }}
+    runs-on: macos-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        method: [gemfile]
+
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Checkout mn-samples-cc
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SAMPLES_REPO }}
+          ref: ${{ env.SAMPLES_REF }}
+          path: samples
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Install Homebrew dependencies
+        run: |
+          brew install plantuml
+
+      - name: Install mnenv
+        working-directory: mnenv
+        run: |
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install Metanorma
+        working-directory: mnenv
+        run: |
+          mnenv install ${{ env.MNENV_VERSION }} --source ${{ matrix.method }}
+          mnenv global ${{ env.MNENV_VERSION }} --source ${{ matrix.method }}
+          mnenv versions
+
+      - name: Verify metanorma
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          metanorma version
+
+      - name: Test single document compilation
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          metanorma compile sources/cc-18011.adoc
+          if ls sources/cc-18011.* 2>/dev/null; then
+            echo "Document compilation successful"
+            ls -lah sources/cc-18011.*
+          else
+            echo "Warning: No output files found"
+          fi
+
+      - name: Test site generation
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          metanorma site generate --agree-to-terms
+          if [ -d "site" ]; then
+            echo "Site generation successful"
+            ls -lah site/ | head -20
+          else
+            echo "Warning: No site directory found"
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-macos-${{ matrix.method }}
+          path: |
+            samples/sources/cc-18011.*
+            samples/site/
+          retention-days: 7
+          if-no-files-found: warn

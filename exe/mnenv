@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Add lib directory to load path for development/use from repo
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
+require 'mnenv'
+
+# Run the CLI
+Mnenv::Cli.start(ARGV)

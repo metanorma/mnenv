@@ -1,0 +1,72 @@
+#!/bin/bash
+# One-line installer for mnenv (Unix/macOS)
+# Install: curl -fsSL https://raw.githubusercontent.com/metanorma/mnenv/main/bin/mnenv-installer | bash
+
+set -e
+
+MNENV_ROOT="${MNENV_ROOT:-$HOME/.mnenv}"
+REPO_URL="https://github.com/metanorma/mnenv"
+
+main() {
+    echo "==> Installing mnenv to $MNENV_ROOT"
+
+    # Clone or update repository
+    if [ -d "$MNENV_ROOT" ]; then
+        echo "==> Updating existing installation"
+        cd "$MNENV_ROOT"
+        git pull
+    else
+        echo "==> Cloning repository"
+        git clone "$REPO_URL" "$MNENV_ROOT"
+    fi
+
+    # Setup shell integration
+    setup_shell
+
+    # Create directory structure
+    mkdir -p "$MNENV_ROOT/versions"
+    mkdir -p "$MNENV_ROOT/shims"
+    mkdir -p "$MNENV_ROOT/cache"
+
+    echo "==> Installation complete!"
+    echo "==> Reload your shell or run: source ~/.mnenv-init"
+    echo "==> Then run: mnenv install --list"
+}
+
+setup_shell() {
+    local shell_name="$(basename "$SHELL")"
+
+    case "$shell_name" in
+        bash)
+            add_to_shell_config ~/.bashrc "source \"$MNENV_ROOT/completions/bash\""
+            ;;
+        zsh)
+            add_to_shell_config ~/.zshrc "source \"$MNENV_ROOT/completions/zsh\""
+            ;;
+        fish)
+            add_to_shell_config ~/.config/fish/config.fish "source \"$MNENV_ROOT/completions/fish\""
+            ;;
+        *)
+            echo "==> Unsupported shell: $shell_name"
+            echo "==> Manually add: source $MNENV_ROOT/completions/$shell_name"
+            ;;
+    esac
+}
+
+add_to_shell_config() {
+    local config_file="$1"
+    local init_line="$2"
+
+    if [ -f "$config_file" ] && ! grep -q "$MNENV_ROOT" "$config_file" 2>/dev/null; then
+        echo "" >> "$config_file"
+        echo "# Mnenv" >> "$config_file"
+        echo "$init_line" >> "$config_file"
+        echo "==> Added mnenv to $config_file"
+    elif [ ! -f "$config_file" ]; then
+        echo "# Mnenv" >> "$config_file"
+        echo "$init_line" >> "$config_file"
+        echo "==> Created $config_file and added mnenv"
+    fi
+}
+
+main "$@"

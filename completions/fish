@@ -1,0 +1,29 @@
+# Mnenv Fish completion
+
+complete -c mnenv -f
+
+complete -c mnenv -n __fish_use_subcommand -a install -d "Install a Metanorma version"
+complete -c mnenv -n "__fish_seen_subcommand_from install" -l list -d "List all available versions"
+complete -c mnenv -n "__fish_seen_subcommand_from install" -l interactive -s i -d "Interactive selection"
+complete -c mnenv -n "__fish_seen_subcommand_from install" -a "(ls -1 ~/.mnenv/versions/)"
+
+complete -c mnenv -n __fish_use_subcommand -a use -d "Set version for current shell"
+complete -c mnenv -n "__fish_seen_subcommand_from use" -l interactive -s i -d "Interactive selection"
+complete -c mnenv -n "__fish_seen_subcommand_from use" -a "(ls -1 ~/.mnenv/versions/)"
+
+complete -c mnenv -n __fish_use_subcommand -a global -d "Set default version globally"
+complete -c mnenv -n "__fish_seen_subcommand_from global" -l interactive -s i -d "Interactive selection"
+complete -c mnenv -n "__fish_seen_subcommand_from global" -a "(ls -1 ~/.mnenv/versions/)"
+
+complete -c mnenv -n __fish_use_subcommand -a local -d "Set version for current directory"
+complete -c mnenv -n "__fish_seen_subcommand_from local" -l interactive -s i -d "Interactive selection"
+complete -c mnenv -n "__fish_seen_subcommand_from local" -a "(ls -1 ~/.mnenv/versions/)"
+
+complete -c mnenv -n __fish_use_subcommand -a versions -d "List installed versions"
+complete -c mnenv -n __fish_use_subcommand -a uninstall -d "Uninstall a version"
+complete -c mnenv -n "__fish_seen_subcommand_from uninstall" -a "(ls -1 ~/.mnenv/versions/)"
+
+# Add ~/.mnenv/shims to PATH if not already present
+if not contains -- ~/.mnenv/shims $PATH
+    set -gx PATH ~/.mnenv/shims $PATH
+end

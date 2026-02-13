@@ -1,0 +1,137 @@
+name: Windows Integration Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MNENV_VERSION: '1.14.3'
+  SAMPLES_REPO: 'metanorma/mn-samples-cc'
+  SAMPLES_REF: 'main'
+
+jobs:
+  test-windows:
+    name: Windows - ${{ matrix.method }}
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        method: [gemfile]
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Checkout mn-samples-cc
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SAMPLES_REPO }}
+          ref: ${{ env.SAMPLES_REF }}
+          path: samples
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Install mnenv
+        working-directory: mnenv
+        run: |
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install Metanorma
+        working-directory: mnenv
+        run: |
+          mnenv install ${{ env.MNENV_VERSION }} --source ${{ matrix.method }}
+          mnenv global ${{ env.MNENV_VERSION }} --source ${{ matrix.method }}
+          mnenv versions
+
+      - name: Add mnenv to PATH
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+          echo "$env:USERPROFILE\.mnenv\shims" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+          # Debug: Check shims directory
+          Write-Host "=== Shims directory contents ==="
+          if (Test-Path "$env:USERPROFILE\.mnenv\shims") {
+            Get-ChildItem "$env:USERPROFILE\.mnenv\shims" -ErrorAction SilentlyContinue
+          } else {
+            Write-Host "Shims directory does not exist!"
+          }
+
+          Write-Host ""
+          Write-Host "=== Version directory contents ==="
+          if (Test-Path "$env:USERPROFILE\.mnenv\versions") {
+            Get-ChildItem "$env:USERPROFILE\.mnenv\versions" -ErrorAction SilentlyContinue
+
+            Write-Host ""
+            Write-Host "=== Contents of each version directory ==="
+            Get-ChildItem "$env:USERPROFILE\.mnenv\versions" -Directory | ForEach-Object {
+              Write-Host "--- Version: $($_.Name) ---"
+              Get-ChildItem $_.FullName -Recurse -Depth 2 | Select-Object FullName
+            }
+          } else {
+            Write-Host "Versions directory does not exist!"
+          }
+
+          Write-Host ""
+          Write-Host "=== Checking specific bin directories ==="
+          $binDir = "$env:USERPROFILE\.mnenv\versions\${{ env.MNENV_VERSION }}\bin"
+          Write-Host "Checking: $binDir"
+          if (Test-Path $binDir) {
+            Get-ChildItem $binDir | ForEach-Object { Write-Host "  $($_.Name)" }
+          } else {
+            Write-Host "  bin directory does not exist!"
+          }
+
+      - name: Verify metanorma
+        run: |
+          metanorma version
+
+      - name: Test single document compilation
+        working-directory: samples
+        run: |
+          metanorma compile sources/cc-18011.adoc
+          if ((Test-Path "sources/cc-18011.xml") -or (Test-Path "sources/cc-18011.html")) {
+            Write-Host "Document compilation successful"
+            Get-ChildItem sources/cc-18011.*
+          } else {
+            Write-Host "Warning: No output files found"
+            Get-ChildItem sources/ -ErrorAction SilentlyContinue
+          }
+
+      - name: Test site generation
+        working-directory: samples
+        run: |
+          metanorma site generate --agree-to-terms
+          if (Test-Path "site") {
+            Write-Host "Site generation successful"
+            Get-ChildItem site/ -ErrorAction SilentlyContinue | Select-Object -First 10
+          } else {
+            Write-Host "Warning: No site directory found"
+          }
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-windows-${{ matrix.method }}
+          path: |
+            samples/sources/cc-18011.*
+            samples/site/
+          retention-days: 7
+          if-no-files-found: warn

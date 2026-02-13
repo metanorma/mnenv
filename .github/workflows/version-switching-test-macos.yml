@@ -1,0 +1,163 @@
+name: Version Switching Tests (macOS)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  VERSIONS: '1.13.9 1.14.3'
+
+jobs:
+  version-switching-macos:
+    name: macOS Version Switching
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Install mnenv
+        run: |
+          cd mnenv
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install Metanorma versions (gemfile)
+        run: |
+          for version in ${{ env.VERSIONS }}; do
+            echo "Installing Metanorma gemfile version: $version"
+            mnenv install "$version" --source gemfile
+          done
+          mnenv versions
+
+      - name: Test global version switching
+        run: |
+          # Set up mnenv in PATH
+          export PATH="$HOME/.mnenv/shims:$PATH"
+
+          echo "=== Testing global version switching ==="
+
+          # Set and verify first version
+          mnenv global 1.13.9 --source gemfile
+          metanorma_version=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
+          echo "After setting global to 1.13.9: Metanorma::Cli version = $metanorma_version"
+          if [ "$metanorma_version" = "1.13.9" ]; then
+            echo "✓ Global version 1.13.9 verified"
+          else
+            echo "✗ Expected 1.13.9, got $metanorma_version"
+            exit 1
+          fi
+
+          # Switch to second version
+          mnenv global 1.14.3 --source gemfile
+          metanorma_version=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
+          echo "After switching global to 1.14.3: Metanorma::Cli version = $metanorma_version"
+          if [ "$metanorma_version" = "1.14.3" ]; then
+            echo "✓ Global version 1.14.3 verified"
+          else
+            echo "✗ Expected 1.14.3, got $metanorma_version"
+            exit 1
+          fi
+
+          echo "✓ macOS global version switching test passed"
+
+      - name: Test local version override
+        run: |
+          # Set up mnenv in PATH
+          export PATH="$HOME/.mnenv/shims:$PATH"
+
+          echo "=== Testing local version override ==="
+
+          # Set global to 1.14.3
+          mnenv global 1.14.3 --source gemfile
+          global_version=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
+          echo "Global version: $global_version"
+
+          # Create test directory and set local version
+          mkdir -p /tmp/test-project
+          cd /tmp/test-project
+          mnenv local 1.13.9 --source gemfile
+
+          # Verify local override works
+          local_version=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
+          echo "Local version in /tmp/test-project: $local_version"
+          if [ "$local_version" = "1.13.9" ]; then
+            echo "✓ Local version 1.13.9 overrides global 1.14.3"
+          else
+            echo "✗ Expected 1.13.9, got $local_version"
+            exit 1
+          fi
+
+          # Verify global still applies outside local directory
+          cd /tmp
+          outside_version=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
+          echo "Version outside /tmp/test-project: $outside_version"
+          if [ "$outside_version" = "1.14.3" ]; then
+            echo "✓ Global version 1.14.3 restored outside project directory"
+          else
+            echo "✗ Expected 1.14.3, got $outside_version"
+            exit 1
+          fi
+
+          echo "✓ macOS local version override test passed"
+
+      - name: Test version file precedence
+        run: |
+          # Set up mnenv in PATH
+          export PATH="$HOME/.mnenv/shims:$PATH"
+
+          echo "=== Testing version file precedence ==="
+
+          # Clean slate
+          rm -f ~/.mnenv/version ~/.mnenv/source
+          rm -f /tmp/precedence-test/.metanorma-version
+          rm -f /tmp/precedence-test/.metanorma-source
+
+          mkdir -p /tmp/precedence-test/subdir
+
+          # Set global version
+          mnenv global 1.13.9 --source gemfile
+
+          cd /tmp/precedence-test/subdir
+          version_from_global=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
+          echo "With only global set: $version_from_global"
+
+          # Set local version
+          mnenv local 1.14.3 --source gemfile
+          version_from_local=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
+          echo "With local override: $version_from_local"
+
+          # Set environment variable
+          export MNENV_VERSION=1.13.9
+          export MNENV_SOURCE=gemfile
+          version_from_env=$(metanorma --version 2>&1 | grep "Metanorma::Cli" | grep -oE '\d+\.\d+\.\d+' || echo "failed")
+          echo "With MNENV_VERSION set: $version_from_env"
+
+          echo "✓ macOS precedence test passed"
+
+      - name: Display final state
+        if: always()
+        run: |
+          echo "=== Final mnenv state ==="
+          export PATH="$HOME/.mnenv/shims:$PATH"
+
+          echo "Installed versions:"
+          mnenv versions
+
+          echo ""
+          echo "Current metanorma version:"
+          metanorma --version

@@ -1,0 +1,72 @@
+name: Smoke Tests
+
+on:
+  push:
+    branches: [main, test-gha-workflows]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MNENV_VERSION: '1.14.3'
+
+jobs:
+  quick-test:
+    name: Quick gemfile test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Install mnenv
+        working-directory: mnenv
+        run: |
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install Metanorma
+        run: |
+          mnenv install ${{ env.MNENV_VERSION }} --source gemfile
+          mnenv global ${{ env.MNENV_VERSION }} --source gemfile
+
+      - name: Verify installation
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          metanorma version
+
+      - name: Test simple document
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          mkdir -p /tmp/test-mn
+          cd /tmp/test-mn
+          cat << 'EOF' > test.adoc
+          = Test Document
+          :mn-document-class: standoc
+          Author Name
+
+          == Section
+
+          This is a test.
+          EOF
+          metanorma compile test.adoc --type standoc
+          ls -la test.*
+
+      - name: Upload test output
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-gemfile
+          path: /tmp/test-mn/test.*
+          retention-days: 3
+          if-no-files-found: ignore
