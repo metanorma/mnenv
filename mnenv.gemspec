@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies
   spec.add_dependency 'activesupport'
+  spec.add_dependency 'git'
   spec.add_dependency 'lutaml-model', '~> 0.7'
   spec.add_dependency 'lutaml-xsd', '~> 1.0'
   spec.add_dependency 'moxml'
