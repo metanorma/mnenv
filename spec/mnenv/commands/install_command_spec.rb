@@ -4,7 +4,8 @@ RSpec.describe Mnenv::InstallCommand do
   let(:command) { described_class.new }
 
   describe '#list' do
-    it 'lists all available Metanorma versions', :skip_vcr do
+    it 'lists all available Metanorma versions' do
+      skip 'Integration test - requires network access to GitHub API'
       expect { command.list }.not_to raise_error
     end
   end
