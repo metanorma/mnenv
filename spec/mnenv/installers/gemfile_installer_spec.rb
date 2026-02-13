@@ -1,19 +1,32 @@
 # frozen_string_literal: true
 
-RSpec.describe Mnenv::Installers::GemfileInstaller, :skip_vcr do
+RSpec.describe Mnenv::Installers::GemfileInstaller do
   let(:version) { '1.14.4' }
   let(:source) { 'gemfile' }
   let(:target_dir) { Dir.mktmpdir }
   let(:installer) { described_class.new(version, source: source, target_dir: target_dir) }
-  let(:repo) { Mnenv::GemfileRepository.new }
+  let(:data_dir) { Dir.mktmpdir }
+  let(:repo) { Mnenv::GemfileRepository.new(data_dir: data_dir) }
 
   before do
-    # Ensure a version exists in the repo for testing
-    # We'll skip this if the repo is empty
+    # Create a test versions.yaml for the repository
+    versions_file = File.join(data_dir, 'versions.yaml')
+    test_versions = {
+      'metadata' => {
+        'source' => 'gemfile',
+        'count' => 1,
+        'latest_version' => version
+      },
+      'versions' => [
+        { 'version' => version, 'parsed_at' => Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ') }
+      ]
+    }
+    File.write(versions_file, test_versions.to_yaml)
   end
 
   after do
     FileUtils.rm_rf(target_dir) if Dir.exist?(target_dir)
+    FileUtils.rm_rf(data_dir) if Dir.exist?(data_dir)
   end
 
   describe '#initialize' do

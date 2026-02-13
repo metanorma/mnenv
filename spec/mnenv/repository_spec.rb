@@ -120,11 +120,25 @@ RSpec.describe Mnenv::VersionsManager do
     end
   end
 
-  describe '#clone_repo', :skip_vcr do
+  describe '#clone_repo' do
     it 'clones the versions repository' do
+      skip 'Set RUN_INTEGRATION_TESTS=1 to run git integration tests' unless ENV['RUN_INTEGRATION_TESTS']
+
       manager.clone_repo
       expect(manager.cloned?).to be true
       expect(File.directory?(manager.data_path)).to be true
+    end
+  end
+
+  describe '#data_path' do
+    it 'returns the path to data directory' do
+      expect(manager.data_path).to eq(File.join(tmp_dir, 'versions', 'data'))
+    end
+  end
+
+  describe '#versions_path' do
+    it 'returns the path to versions directory' do
+      expect(manager.versions_path).to eq(File.join(tmp_dir, 'versions'))
     end
   end
 end
