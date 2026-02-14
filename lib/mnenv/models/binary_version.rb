@@ -44,19 +44,20 @@ module Mnenv
     def find_platform(name:, arch:, variant: nil, format: nil)
       candidates = platforms.select { |p| p['name'] == name && p['arch'] == arch }
 
-      # Filter by variant if specified
-      if variant
-        candidates = candidates.select do |p|
-          p['variant'] == variant || (variant.nil? && p['variant'].nil?)
-        end
-      end
+      # Filter by variant
+      # - If variant is specified, match platforms with that variant
+      # - If variant is nil, match platforms WITHOUT a variant (glibc, not musl)
+      candidates = if variant
+                     candidates.select { |p| p['variant'] == variant }
+                   else
+                     candidates.select { |p| p['variant'].nil? }
+                   end
 
       # Filter by format if specified
       if format
         candidates = candidates.select { |p| p['format'] == format }
       end
 
-      # Prefer specific variant matches, then non-variant
       candidates.first
     end
 
