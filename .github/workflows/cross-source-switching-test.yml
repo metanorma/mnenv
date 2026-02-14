@@ -52,14 +52,14 @@ jobs:
         run: |
           mnenv install ${{ env.TEST_VERSION }} --source gemfile
           echo "Gemfile installation:"
-          ls -lah ~/.mnenv/installed/${{ env.TEST_VERSION }}/
+          ls -lah ~/.mnenv/installed/${{ env.TEST_VERSION }}-gemfile/
 
       - name: Install same version with binary
         if: steps.check_binary.outputs.available == 'true'
         run: |
           mnenv install ${{ env.TEST_VERSION }} --source binary
           echo "Both installations:"
-          ls -lah ~/.mnenv/installed/${{ env.TEST_VERSION }}/
+          ls -lah ~/.mnenv/installed/
 
       - name: Test gemfile version works
         run: |
