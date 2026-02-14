@@ -1,0 +1,304 @@
+name: Cross-Source Compilation Tests
+
+on:
+  push:
+    branches: [main, test-gha-workflows]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TEST_VERSION: '1.14.4'
+  SAMPLES_REPO: 'metanorma/mn-samples-cc'
+  SAMPLES_REF: 'main'
+
+jobs:
+  cross-source-linux:
+    name: Linux x64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Checkout mn-samples-cc
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SAMPLES_REPO }}
+          ref: ${{ env.SAMPLES_REF }}
+          path: samples
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+          working-directory: mnenv
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-liberation plantuml
+
+      - name: Install mnenv
+        working-directory: mnenv
+        run: |
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install version with gemfile
+        run: |
+          mnenv install ${{ env.TEST_VERSION }} --source gemfile
+          mnenv versions
+
+      - name: Compile document with gemfile
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          mnenv global ${{ env.TEST_VERSION }} --source gemfile
+
+          echo "=== Compiling with gemfile source ==="
+          metanorma --version
+          metanorma compile sources/cc-18011.adoc
+
+          if [ -f "sources/cc-18011.xml" ]; then
+            echo "✓ Document compiled successfully with gemfile"
+            rm -f sources/cc-18011.xml sources/cc-18011.html
+          else
+            echo "✗ Document compilation failed with gemfile"
+            exit 1
+          fi
+
+      - name: Install version with binary
+        run: |
+          mnenv install ${{ env.TEST_VERSION }} --source binary
+          mnenv versions
+
+      - name: Compile document with binary
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          mnenv global ${{ env.TEST_VERSION }} --source binary
+
+          echo "=== Compiling with binary source ==="
+          metanorma --version
+          metanorma compile sources/cc-18011.adoc
+
+          if [ -f "sources/cc-18011.xml" ]; then
+            echo "✓ Document compiled successfully with binary"
+          else
+            echo "✗ Document compilation failed with binary"
+            exit 1
+          fi
+
+      - name: Switch back to gemfile and compile
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+
+          rm -f sources/cc-18011.xml sources/cc-18011.html
+          mnenv global ${{ env.TEST_VERSION }} --source gemfile
+
+          echo "=== Compiling with gemfile (after switch) ==="
+          metanorma --version
+          metanorma compile sources/cc-18011.adoc
+
+          if [ -f "sources/cc-18011.xml" ]; then
+            echo "✓ Document compiled successfully after switching back to gemfile"
+          else
+            echo "✗ Document compilation failed after switching to gemfile"
+            exit 1
+          fi
+
+      - name: Display final state
+        if: always()
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          echo "=== Final mnenv state ==="
+          mnenv versions
+          echo ""
+          echo "Installed directories:"
+          ls -lah ~/.mnenv/installed/ 2>/dev/null || echo "No versions installed"
+
+  cross-source-macos:
+    name: macOS arm64
+    runs-on: macos-latest
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Checkout mn-samples-cc
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SAMPLES_REPO }}
+          ref: ${{ env.SAMPLES_REF }}
+          path: samples
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+          working-directory: mnenv
+
+      - name: Install system dependencies
+        run: |
+          brew install plantuml
+
+      - name: Install mnenv
+        working-directory: mnenv
+        run: |
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install version with gemfile
+        run: |
+          mnenv install ${{ env.TEST_VERSION }} --source gemfile
+          mnenv versions
+
+      - name: Compile document with gemfile
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          mnenv global ${{ env.TEST_VERSION }} --source gemfile
+
+          echo "=== Compiling with gemfile source ==="
+          metanorma --version
+          metanorma compile sources/cc-18011.adoc
+
+          if [ -f "sources/cc-18011.xml" ]; then
+            echo "✓ Document compiled successfully with gemfile"
+            rm -f sources/cc-18011.xml sources/cc-18011.html
+          else
+            echo "✗ Document compilation failed with gemfile"
+            exit 1
+          fi
+
+      - name: Install version with binary
+        run: |
+          mnenv install ${{ env.TEST_VERSION }} --source binary
+          mnenv versions
+
+      - name: Compile document with binary
+        working-directory: samples
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          mnenv global ${{ env.TEST_VERSION }} --source binary
+
+          echo "=== Compiling with binary source ==="
+          metanorma --version
+          metanorma compile sources/cc-18011.adoc
+
+          if [ -f "sources/cc-18011.xml" ]; then
+            echo "✓ Document compiled successfully with binary"
+          else
+            echo "✗ Document compilation failed with binary"
+            exit 1
+          fi
+
+      - name: Display final state
+        if: always()
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          echo "=== Final mnenv state ==="
+          mnenv versions
+          echo ""
+          echo "Installed directories:"
+          ls -lah ~/.mnenv/installed/ 2>/dev/null || echo "No versions installed"
+
+  cross-source-windows:
+    name: Windows x64
+    runs-on: windows-latest
+    steps:
+      - name: Checkout mnenv
+        uses: actions/checkout@v4
+        with:
+          path: mnenv
+
+      - name: Checkout mn-samples-cc
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SAMPLES_REPO }}
+          ref: ${{ env.SAMPLES_REF }}
+          path: samples
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+          working-directory: mnenv
+
+      - name: Install mnenv
+        working-directory: mnenv
+        run: |
+          bundle install
+          rake install
+          mnenv version
+
+      - name: Install version with gemfile
+        shell: pwsh
+        run: |
+          mnenv install ${{ env.TEST_VERSION }} --source gemfile
+          mnenv versions
+
+      - name: Compile document with gemfile
+        working-directory: samples
+        shell: pwsh
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+          mnenv global ${{ env.TEST_VERSION }} --source gemfile
+
+          Write-Host "=== Compiling with gemfile source ==="
+          metanorma --version
+          metanorma compile sources/cc-18011.adoc
+
+          if (Test-Path "sources/cc-18011.xml") {
+            Write-Host "✓ Document compiled successfully with gemfile"
+            Remove-Item -Force sources/cc-18011.xml, sources/cc-18011.html -ErrorAction SilentlyContinue
+          } else {
+            Write-Host "✗ Document compilation failed with gemfile"
+            exit 1
+          }
+
+      - name: Install version with binary
+        shell: pwsh
+        run: |
+          mnenv install ${{ env.TEST_VERSION }} --source binary
+          mnenv versions
+
+      - name: Compile document with binary
+        working-directory: samples
+        shell: pwsh
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+          mnenv global ${{ env.TEST_VERSION }} --source binary
+
+          Write-Host "=== Compiling with binary source ==="
+          metanorma --version
+          metanorma compile sources/cc-18011.adoc
+
+          if (Test-Path "sources/cc-18011.xml") {
+            Write-Host "✓ Document compiled successfully with binary"
+          } else {
+            Write-Host "✗ Document compilation failed with binary"
+            exit 1
+          }
+
+      - name: Display final state
+        if: always()
+        shell: pwsh
+        run: |
+          $env:Path = "$env:USERPROFILE\.mnenv\shims;$env:Path"
+          Write-Host "=== Final mnenv state ==="
+          mnenv versions
+          Write-Host ""
+          Write-Host "Installed directories:"
+          Get-ChildItem -Path "$env:USERPROFILE\.mnenv\installed" -ErrorAction SilentlyContinue

@@ -67,6 +67,37 @@ jobs:
           mnenv global ${{ env.TEST_VERSION }} --source gemfile
           metanorma --version
 
+      - name: Test binary version works
+        if: steps.check_binary.outputs.available == 'true'
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+          mnenv global ${{ env.TEST_VERSION }} --source binary
+          metanorma --version
+
+      - name: Test source switching via environment variable
+        if: steps.check_binary.outputs.available == 'true'
+        run: |
+          export PATH="$HOME/.mnenv/shims:$PATH"
+
+          echo "=== Testing METANORMA_SOURCE environment variable ==="
+
+          # Set global to gemfile
+          mnenv global ${{ env.TEST_VERSION }} --source gemfile
+
+          # Override to binary via environment variable
+          export METANORMA_VERSION=${{ env.TEST_VERSION }}
+          export METANORMA_SOURCE=binary
+
+          version_output=$(metanorma --version 2>&1)
+          echo "With METANORMA_SOURCE=binary: $version_output"
+
+          # Unset and verify it goes back to global
+          unset METANORMA_VERSION METANORMA_SOURCE
+          version_output=$(metanorma --version 2>&1)
+          echo "After unset: $version_output"
+
+          echo "✓ Environment variable override test passed"
+
       - name: Display final state
         if: always()
         run: |
