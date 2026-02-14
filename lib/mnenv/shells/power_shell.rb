@@ -72,12 +72,12 @@ module Mnenv
           }
 
           # Determine executable path based on source
-          # Installed versions are in $MNENV_ROOT\\installed\\$VERSION
+          # Installed versions are in $MNENV_ROOT\installed\<version>-<source>\
           if ($SOURCE -eq "binary") {
-            $EXECUTABLE = "$MNENV_ROOT\\installed\\$VERSION\\metanorma.exe"
+            $EXECUTABLE = "$MNENV_ROOT\installed\$VERSION-$SOURCE\metanorma.exe"
           } else {
             # Bundler creates .cmd files on Windows, not .bat
-            $EXECUTABLE = "$MNENV_ROOT\\installed\\$VERSION\\bin\\#{executable_name}.cmd"
+            $EXECUTABLE = "$MNENV_ROOT\installed\$VERSION-$SOURCE\bin\#{executable_name}.cmd"
           }
 
           if (-not (Test-Path $EXECUTABLE)) {

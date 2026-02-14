@@ -12,7 +12,7 @@ module Mnenv
     VERSIONS_DATA_DIR = File.join(MNENV_DIR, 'versions').freeze
 
     # Directory for installed Metanorma versions
-    # Contains: 1.14.3/, 1.14.4/, etc. (each with bin/, source, etc.)
+    # Contains: 1.14.3-gemfile/, 1.14.3-binary/, 1.14.4-gemfile/, etc.
     INSTALLED_DIR = File.join(MNENV_DIR, 'installed').freeze
 
     # Directory for shim scripts
@@ -36,14 +36,33 @@ module Mnenv
         FileUtils.mkdir_p(LIB_DIR)
       end
 
-      # Get the installation directory for a specific version
-      def version_install_dir(version)
-        File.join(INSTALLED_DIR, version)
+      # Get the installation directory for a specific version and source
+      # @param version [String] The version number (e.g., "1.14.4")
+      # @param source [String] The source type (e.g., "gemfile", "binary")
+      # @return [String] The full path to the installation directory
+      def version_install_dir(version, source = nil)
+        if source
+          File.join(INSTALLED_DIR, "#{version}-#{source}")
+        else
+          # Backward compatibility: if no source specified, use version only
+          File.join(INSTALLED_DIR, version)
+        end
       end
 
       # Get the path to the data directory within the versions repo
       def versions_data_path
         File.join(VERSIONS_DATA_DIR, 'data')
+      end
+
+      # Parse a directory name into version and source components
+      # @param dir_name [String] Directory name like "1.14.4-gemfile" or "1.14.4"
+      # @return [Array<String, String>] Tuple of [version, source] where source may be nil
+      def parse_version_dir(dir_name)
+        if dir_name =~ /^(.+)-(gemfile|binary)$/
+          [Regexp.last_match(1), Regexp.last_match(2)]
+        else
+          [dir_name, nil]
+        end
       end
     end
   end

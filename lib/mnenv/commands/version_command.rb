@@ -106,21 +106,20 @@ module Mnenv
     private
 
     # List installed versions with their sources
-    # Uses Paths::INSTALLED_DIR (not the versions data directory)
+    # Uses Paths::INSTALLED_DIR with new naming convention: <version>-<source>
     def list_installed_versions
       return {} unless Dir.exist?(Paths::INSTALLED_DIR)
 
       versions = Hash.new { |h, k| h[k] = [] }
 
-      Dir.glob("#{Paths::INSTALLED_DIR}/*/").sort.each do |dir|
-        version = File.basename(dir)
-        source_file = File.join(dir, 'source')
+      Dir.glob(File.join(Paths::INSTALLED_DIR, '*')).each do |dir|
+        next unless File.directory?(dir)
 
-        # Only include directories that have a valid source file
-        next unless File.exist?(source_file)
+        dir_name = File.basename(dir)
+        version, source = Paths.parse_version_dir(dir_name)
 
-        source = File.read(source_file).strip
-        next if source.empty?
+        # Only include valid version-source directories
+        next unless version && source
 
         versions[version] << source
       end
@@ -136,44 +135,30 @@ module Mnenv
 
     def select_version_interactive
       prompt = TTY::Prompt.new
-      choices = installed_versions.map do |v|
-        source_file = File.join(Paths.version_install_dir(v), 'source')
-        src = File.exist?(source_file) ? File.read(source_file).strip : 'unknown'
-        { name: "#{v} (#{src})", value: v }
+      installed = list_installed_versions
+
+      raise 'No versions installed. Run: mnenv install --list' if installed.empty?
+
+      choices = installed.flat_map do |version, sources|
+        sources.map do |source|
+          { name: "#{version} (#{source})", value: [version, source] }
+        end
       end
 
-      raise 'No versions installed. Run: mnenv install --list' if choices.empty?
-
-      version = prompt.select('Select a version:', choices)
-
-      source = prompt.select('Select source:', [
-                               { name: 'gemfile', value: 'gemfile' },
-                               { name: 'binary', value: 'binary' }
-                             ])
+      version, source = prompt.select('Select a version:', choices)
 
       [version, source]
     end
 
     def verify_installed!(version, source)
-      version_dir = Paths.version_install_dir(version)
-      unless Dir.exist?(version_dir)
-        raise "Version #{version} is not installed. Run: mnenv install #{version}#{" --source #{source}" if source}"
-      end
+      version_dir = Paths.version_install_dir(version, source)
+      return if Dir.exist?(version_dir)
 
-      # Note: We don't enforce source matching here because the same version
-      # may have both gemfile and binary executables installed. The shim will
-      # select the appropriate executable based on the source setting.
+      raise "Version #{version} (source: #{source}) is not installed. Run: mnenv install #{version} --source #{source}"
     end
 
     def installed_versions
-      return [] unless Dir.exist?(Paths::INSTALLED_DIR)
-
-      Dir.glob("#{Paths::INSTALLED_DIR}/*/").filter_map do |dir|
-        version = File.basename(dir)
-        source_file = File.join(dir, 'source')
-        # Only include directories that have a valid source file
-        version if File.exist?(source_file)
-      end.sort
+      list_installed_versions.keys.sort
     end
 
     def default_source

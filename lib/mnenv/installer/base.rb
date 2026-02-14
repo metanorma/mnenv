@@ -17,18 +17,17 @@ module Mnenv
       verify_prerequisites!
       create_install_directory
       perform_installation
-      save_source_metadata
       regenerate_shims
     end
 
     def installed?
-      Dir.exist?(version_dir) && File.exist?(File.join(version_dir, 'source'))
+      Dir.exist?(version_dir)
     end
 
     private
 
     def default_target_dir
-      @default_target_dir ||= Paths.version_install_dir(version)
+      @default_target_dir ||= Paths.version_install_dir(version, source)
     end
 
     def version_dir
@@ -45,10 +44,6 @@ module Mnenv
 
     def create_install_directory
       FileUtils.mkdir_p(version_dir)
-    end
-
-    def save_source_metadata
-      File.write(File.join(version_dir, 'source'), @source)
     end
 
     def regenerate_shims

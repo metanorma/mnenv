@@ -54,9 +54,7 @@ module Mnenv
                    end
 
       # Filter by format if specified
-      if format
-        candidates = candidates.select { |p| p['format'] == format }
-      end
+      candidates = candidates.select { |p| p['format'] == format } if format
 
       candidates.first
     end

@@ -27,13 +27,11 @@ module Mnenv
       def make_executable
         # Linux/macOS: make the binary executable
         binary_path = File.join(version_dir, 'metanorma')
-        if File.exist?(binary_path)
-          FileUtils.chmod(0o755, binary_path)
-        end
+        FileUtils.chmod(0o755, binary_path) if File.exist?(binary_path)
 
         # Windows: .exe files don't need chmod
         exe_path = File.join(version_dir, 'metanorma.exe')
-        return unless File.exist?(exe_path)
+        nil unless File.exist?(exe_path)
       end
 
       private
@@ -77,9 +75,7 @@ module Mnenv
         repo = BinaryRepository.new
         binary_version = repo.find(version)
 
-        unless binary_version
-          raise InstallationError, "Binary version #{version} not found in repository"
-        end
+        raise InstallationError, "Binary version #{version} not found in repository" unless binary_version
 
         platform, arch, variant = detect_platform_arch_variant
 
@@ -95,13 +91,9 @@ module Mnenv
             format: fmt
           )
 
-          if platform_data && platform_data['url']
-            return [platform_data['url'], fmt]
-          end
-        end
+          return [platform_data['url'], fmt] if platform_data && platform_data['url']
 
-        # Try without variant (for non-musl systems)
-        formats.each do |fmt|
+          # Try without variant (for non-musl systems)
           platform_data = binary_version.find_platform(
             name: platform,
             arch: arch,
@@ -109,13 +101,11 @@ module Mnenv
             format: fmt
           )
 
-          if platform_data && platform_data['url']
-            return [platform_data['url'], fmt]
-          end
+          return [platform_data['url'], fmt] if platform_data && platform_data['url']
         end
 
         # Fallback: construct URL manually (for backward compatibility)
-        warn "Warning: Platform data not found in cache, constructing URL manually"
+        warn 'Warning: Platform data not found in cache, constructing URL manually'
         fallback_url_and_format(platform, arch, variant)
       end
 
@@ -168,12 +158,11 @@ module Mnenv
             filename = File.basename(entry.full_name)
             next unless filename.start_with?('metanorma') && !filename.include?('.')
 
-            target_name = if filename == 'metanorma'
-                            'metanorma'
-                          else
-                            # Rename metanorma-linux-x86_64 to just metanorma
-                            'metanorma'
-                          end
+            if filename == 'metanorma'
+            else
+              # Rename metanorma-linux-x86_64 to just metanorma
+            end
+            target_name = 'metanorma'
 
             File.open(File.join(version_dir, target_name), 'wb') do |f|
               f.write(entry.read)
@@ -236,8 +225,6 @@ module Mnenv
           'musl'
         elsif File.symlink?('/lib/libc.musl-x86_64.so.1')
           'musl'
-        else
-          nil
         end
       rescue StandardError
         nil

@@ -55,36 +55,40 @@ module Mnenv
     def discover_executables
       executables = Set.new
 
-      # Discover from gemfile installations (binstubs in bin/)
-      bin_pattern = File.join(@installed_dir, '*', 'bin', '*')
-      Dir.glob(bin_pattern).each do |bin_path|
-        next if File.directory?(bin_path)
+      # Scan installed directories with new naming convention: <version>-<source>
+      Dir.glob(File.join(@installed_dir, '*')).each do |version_dir|
+        next unless File.directory?(version_dir)
 
-        basename = File.basename(bin_path)
+        dir_name = File.basename(version_dir)
+        version, source = Paths.parse_version_dir(dir_name)
+        next unless version && source
 
-        # On Windows, bundler creates both 'command' and 'command.cmd'
-        # We want to create shims for the base command name
-        if windows? && (basename.end_with?('.cmd') || basename.end_with?('.bat'))
-          # Skip .cmd and .bat files - we'll create shims from the base name
-          next
-        end
+        case source
+        when 'gemfile'
+          # Discover binstubs from bundle install
+          bin_dir = File.join(version_dir, 'bin')
+          next unless Dir.exist?(bin_dir)
 
-        # Check if file is executable (Unix) or is a batch file (Windows)
-        executables << basename if windows? || File.executable?(bin_path)
-      end
+          Dir.glob(File.join(bin_dir, '*')).each do |bin_path|
+            next if File.directory?(bin_path)
 
-      # Discover from binary installations (single metanorma binary)
-      # On Windows, look for .exe files
-      binary_patterns = [
-        File.join(@installed_dir, '*', 'metanorma'),
-        File.join(@installed_dir, '*', 'metanorma.exe')
-      ]
+            basename = File.basename(bin_path)
 
-      binary_patterns.each do |pattern|
-        Dir.glob(pattern).each do |bin_path|
-          # Only if it's a binary installation (has "source" file containing "binary")
-          source_file = File.join(File.dirname(bin_path), 'source')
-          if File.exist?(source_file) && File.read(source_file).strip == 'binary' && (File.executable?(bin_path) || bin_path.end_with?('.exe'))
+            # On Windows, bundler creates both 'command' and 'command.cmd'
+            # Skip .cmd and .bat files - we'll create shims from the base name
+            next if windows? && (basename.end_with?('.cmd') || basename.end_with?('.bat'))
+
+            executables << basename if windows? || File.executable?(bin_path)
+          end
+
+        when 'binary'
+          # Binary installations have a single metanorma binary
+          binary_path = File.join(version_dir, 'metanorma')
+          exe_path = File.join(version_dir, 'metanorma.exe')
+
+          if File.exist?(binary_path) && (File.executable?(binary_path) || windows?)
+            executables << 'metanorma'
+          elsif File.exist?(exe_path)
             executables << 'metanorma'
           end
         end
