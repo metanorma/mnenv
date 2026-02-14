@@ -14,7 +14,6 @@ module Mnenv
   autoload :SnapCommand, 'mnenv/commands/snap_command'
   autoload :HomebrewCommand, 'mnenv/commands/homebrew_command'
   autoload :ChocolateyCommand, 'mnenv/commands/chocolatey_command'
-  autoload :BinaryCommand, 'mnenv/commands/binary_command'
   autoload :InstallCommand, 'mnenv/commands/install_command'
   autoload :VersionCommand, 'mnenv/commands/version_command'
   autoload :UninstallCommand, 'mnenv/commands/uninstall_command'
@@ -58,9 +57,6 @@ module Mnenv
 
     desc 'chocolatey SUBCOMMAND', 'Manage Chocolatey versions'
     subcommand 'chocolatey', ChocolateyCommand
-
-    desc 'binary SUBCOMMAND', 'Manage Binary (packed-mn) versions'
-    subcommand 'binary', BinaryCommand
 
     # Interactive installation commands
     desc 'install [VERSION]', 'Install a Metanorma version'

@@ -7,6 +7,7 @@ require 'rubygems/package'
 require 'zlib'
 require 'tempfile'
 require_relative '../installer/base'
+require_relative '../binary_repository'
 
 module Mnenv
   module Installers
@@ -26,35 +27,109 @@ module Mnenv
       private
 
       def verify_version_available!
-        releases = fetch_releases
-        tag_name = "v#{version}"
+        repo = BinaryRepository.new
+        binary_version = repo.find(version)
 
-        return if releases.any? { |r| r['tag_name'] == tag_name }
+        return if binary_version
 
-        available = releases.map { |r| r['tag_name'] }.join(', ')
+        available = repo.all.map(&:version).first(5).join(', ')
         raise InstallationError, "Binary version #{version} not found.\n" \
-                                "Available: #{available}\n" \
+                                "Available: #{available}...\n" \
                                 "Or use: mnenv install #{version} --source=gemfile"
       end
 
       def download_binary
-        url, extension = binary_url_with_extension
+        url, format = binary_url_and_format
         warn "Downloading #{url}..."
 
         tempfile = download_to_tempfile(url)
 
-        if extension == '.tgz'
+        case format
+        when 'tgz'
           extract_tgz(tempfile)
-        elsif extension == '.zip'
+        when 'zip'
           extract_zip(tempfile)
-        else
+        when 'exe'
           # Windows .exe - just copy directly
           FileUtils.cp(tempfile.path, File.join(version_dir, 'metanorma.exe'))
+        else
+          raise InstallationError, "Unknown binary format: #{format}"
         end
       rescue OpenURI::HTTPError => e
         raise InstallationError, "Failed to download binary: #{e.message}"
       ensure
         tempfile&.close&.unlink
+      end
+
+      def binary_url_and_format
+        repo = BinaryRepository.new
+        binary_version = repo.find(version)
+
+        unless binary_version
+          raise InstallationError, "Binary version #{version} not found in repository"
+        end
+
+        platform, arch, variant = detect_platform_arch_variant
+
+        # Try to find a matching platform in the version data
+        # Priority: exe for Windows, tgz for Unix, then zip as fallback
+        formats = platform == 'windows' ? %w[exe zip] : %w[tgz]
+
+        formats.each do |fmt|
+          platform_data = binary_version.find_platform(
+            name: platform,
+            arch: arch,
+            variant: variant,
+            format: fmt
+          )
+
+          if platform_data && platform_data['url']
+            return [platform_data['url'], fmt]
+          end
+        end
+
+        # Try without variant (for non-musl systems)
+        formats.each do |fmt|
+          platform_data = binary_version.find_platform(
+            name: platform,
+            arch: arch,
+            variant: nil,
+            format: fmt
+          )
+
+          if platform_data && platform_data['url']
+            return [platform_data['url'], fmt]
+          end
+        end
+
+        # Fallback: construct URL manually (for backward compatibility)
+        warn "Warning: Platform data not found in cache, constructing URL manually"
+        fallback_url_and_format(platform, arch, variant)
+      end
+
+      def fallback_url_and_format(platform, arch, variant)
+        tag_name = "v#{version}"
+
+        if platform == 'windows'
+          url_exe = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}-#{arch}.exe"
+          return [url_exe, 'exe'] if url_exists?(url_exe)
+
+          url_zip = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}-#{arch}.zip"
+          return [url_zip, 'zip'] if url_exists?(url_zip)
+
+          raise InstallationError, "No Windows binary found for version #{version}"
+        else
+          # Try with variant (e.g., musl)
+          if variant
+            url_variant = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}-#{variant}-#{arch}.tgz"
+            return [url_variant, 'tgz'] if url_exists?(url_variant)
+          end
+
+          url_with_arch = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}-#{arch}.tgz"
+          return [url_with_arch, 'tgz'] if url_exists?(url_with_arch)
+
+          raise InstallationError, "No binary found for #{platform}/#{arch} version #{version}"
+        end
       end
 
       def download_to_tempfile(url)
@@ -100,36 +175,6 @@ module Mnenv
         end
       end
 
-      def binary_url_with_extension
-        platform, arch = detect_platform_and_arch
-        tag_name = "v#{version}"
-
-        if platform == 'windows'
-          # Windows: try .exe first, then .zip
-          url_exe = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}-#{arch}.exe"
-          return [url_exe, '.exe'] if url_exists?(url_exe)
-
-          url_zip = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}-#{arch}.zip"
-          return [url_zip, '.zip'] if url_exists?(url_zip)
-
-          # Try without arch (assumed x86_64)
-          url_exe_no_arch = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}.exe"
-          return [url_exe_no_arch, '.exe'] if url_exists?(url_exe_no_arch)
-
-          raise InstallationError, "No Windows binary found for version #{version}"
-        else
-          # Linux/macOS: try .tgz with arch, then without arch (assumed x86_64)
-          url_with_arch = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}-#{arch}.tgz"
-          return [url_with_arch, '.tgz'] if url_exists?(url_with_arch)
-
-          # Try without arch (assumed x86_64/x64)
-          url_no_arch = "https://github.com/#{PACKED_MN_REPO}/releases/download/#{tag_name}/metanorma-#{platform}.tgz"
-          return [url_no_arch, '.tgz'] if url_exists?(url_no_arch)
-
-          raise InstallationError, "No binary found for #{platform}/#{arch} version #{version}"
-        end
-      end
-
       def url_exists?(url)
         uri = URI(url)
         Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
@@ -140,7 +185,7 @@ module Mnenv
         false
       end
 
-      def detect_platform_and_arch
+      def detect_platform_arch_variant
         platform = case RbConfig::CONFIG['host_os']
                    when /linux/   then 'linux'
                    when /darwin/  then 'darwin'
@@ -155,7 +200,23 @@ module Mnenv
                else 'x86_64' # Default to x86_64
                end
 
-        [platform, arch]
+        # Detect variant (e.g., musl for Alpine Linux)
+        variant = detect_variant if platform == 'linux'
+
+        [platform, arch, variant]
+      end
+
+      def detect_variant
+        # Check for musl libc (Alpine Linux)
+        if File.exist?('/etc/alpine-release')
+          'musl'
+        elsif File.symlink?('/lib/libc.musl-x86_64.so.1')
+          'musl'
+        else
+          nil
+        end
+      rescue StandardError
+        nil
       end
 
       def fetch_releases

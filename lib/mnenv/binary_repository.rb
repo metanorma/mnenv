@@ -109,8 +109,11 @@ module Mnenv
     def parse_cached_version(hash)
       return nil unless hash['version']
 
-      # Extract assets from platforms array
-      assets = (hash['platforms'] || []).map { |p| p['filename'] }
+      # Extract assets from platforms array (for backward compatibility)
+      assets = (hash['platforms'] || []).map { |p| p['filename'] }.compact
+
+      # Store full platforms data including URLs
+      platforms = hash['platforms'] || []
 
       BinaryVersion.new(
         version: hash['version'],
@@ -120,7 +123,8 @@ module Mnenv
         metadata: {
           'tag_name' => hash['tag_name'] || "v#{hash['version']}",
           'html_url' => hash['html_url'],
-          'assets' => assets
+          'assets' => assets,
+          'platforms' => platforms
         }
       )
     end

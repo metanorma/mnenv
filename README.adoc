@@ -170,18 +170,12 @@ mnenv uninstall 1.14.4 --force
 mnenv version
 ----
 
-=== Manage binary version data
+=== Update version data
 
 [source,shell]
 ----
-# Refresh binary version data from GitHub
-mnenv binary refresh
-
-# Re-fetch all binary versions
-mnenv binary revamp
-
-# List binary versions
-mnenv binary list
+# Update version data from metanorma/versions repository
+mnenv update
 ----
 
 == Version Sources
@@ -251,8 +245,7 @@ mnenv
 ├── Commands/
 │   ├── InstallCommand     # Install versions
 │   ├── VersionCommand     # Version switching (global, local, use, versions)
-│   ├── UninstallCommand   # Uninstall versions
-│   └── BinaryCommand      # Manage binary version data
+│   └── UninstallCommand   # Uninstall versions
 ├── Installers/
 │   ├── Base               # Abstract installer
 │   ├── BinaryInstaller    # Binary installation (downloads, extracts)

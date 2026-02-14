@@ -29,9 +29,51 @@ module Mnenv
       metadata&.dig('assets') || []
     end
 
+    # Get platforms info (with URLs, format, etc.)
+    def platforms
+      metadata&.dig('platforms') || []
+    end
+
     # Check if binary is available for a specific platform
     def binary_for_platform?(platform)
       assets.any? { |a| a == "metanorma-#{platform}" }
+    end
+
+    # Find the best matching platform entry for current system
+    # Returns the platform hash with url, format, etc.
+    def find_platform(name:, arch:, variant: nil, format: nil)
+      candidates = platforms.select { |p| p['name'] == name && p['arch'] == arch }
+
+      # Filter by variant if specified
+      if variant
+        candidates = candidates.select do |p|
+          p['variant'] == variant || (variant.nil? && p['variant'].nil?)
+        end
+      end
+
+      # Filter by format if specified
+      if format
+        candidates = candidates.select { |p| p['format'] == format }
+      end
+
+      # Prefer specific variant matches, then non-variant
+      candidates.first
+    end
+
+    # Get download URL for a specific platform/arch combination
+    def download_url(name:, arch:, variant: nil, format: nil)
+      platform = find_platform(name: name, arch: arch, variant: variant, format: format)
+      platform&.dig('url')
+    end
+
+    # Get available platform names
+    def available_platforms
+      platforms.map { |p| p['name'] }.uniq
+    end
+
+    # Get available architectures for a platform
+    def available_arches_for(platform_name)
+      platforms.select { |p| p['name'] == platform_name }.map { |p| p['arch'] }.uniq
     end
   end
 end
