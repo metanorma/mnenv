@@ -71,7 +71,7 @@ module Mnenv
           )
 
           rem Determine executable path based on source
-          rem Installed versions are in %MNENV_ROOT%\installed\<version>-<source>\
+          rem Installed versions are in %MNENV_ROOT%\\installed\\<version>-<source>\\
           if "%SOURCE%"=="binary" (
             set "EXECUTABLE=%MNENV_ROOT%\\installed\\%VERSION%-%SOURCE%\\metanorma.exe"
           ) else (
