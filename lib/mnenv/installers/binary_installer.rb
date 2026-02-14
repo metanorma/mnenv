@@ -24,6 +24,18 @@ module Mnenv
         make_executable
       end
 
+      def make_executable
+        # Linux/macOS: make the binary executable
+        binary_path = File.join(version_dir, 'metanorma')
+        if File.exist?(binary_path)
+          FileUtils.chmod(0o755, binary_path)
+        end
+
+        # Windows: .exe files don't need chmod
+        exe_path = File.join(version_dir, 'metanorma.exe')
+        return unless File.exist?(exe_path)
+      end
+
       private
 
       def verify_version_available!
