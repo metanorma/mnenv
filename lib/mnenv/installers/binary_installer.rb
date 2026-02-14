@@ -147,11 +147,23 @@ module Mnenv
           tar.each do |entry|
             next unless entry.file?
 
-            # Look for the metanorma binary (could be at root or in a subdirectory)
+            # Look for the metanorma binary
+            # The archive may contain:
+            # - metanorma (expected)
+            # - metanorma-linux-x86_64 (actual packed-mn naming)
+            # - metanorma-darwin-arm64
+            # etc.
             filename = File.basename(entry.full_name)
-            next unless filename == 'metanorma'
+            next unless filename.start_with?('metanorma') && !filename.include?('.')
 
-            File.open(File.join(version_dir, 'metanorma'), 'wb') do |f|
+            target_name = if filename == 'metanorma'
+                            'metanorma'
+                          else
+                            # Rename metanorma-linux-x86_64 to just metanorma
+                            'metanorma'
+                          end
+
+            File.open(File.join(version_dir, target_name), 'wb') do |f|
               f.write(entry.read)
             end
             found = true
