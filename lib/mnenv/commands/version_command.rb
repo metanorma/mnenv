@@ -160,12 +160,9 @@ module Mnenv
         raise "Version #{version} is not installed. Run: mnenv install #{version}#{" --source #{source}" if source}"
       end
 
-      return unless source
-
-      source_file = File.join(version_dir, 'source')
-      return unless File.exist?(source_file) && File.read(source_file).strip != source
-
-      raise "Version #{version} is installed with source #{File.read(source_file).strip}, not #{source}"
+      # Note: We don't enforce source matching here because the same version
+      # may have both gemfile and binary executables installed. The shim will
+      # select the appropriate executable based on the source setting.
     end
 
     def installed_versions
