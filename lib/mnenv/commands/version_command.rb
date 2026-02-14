@@ -3,7 +3,7 @@
 require 'tty/prompt'
 require 'json'
 require_relative '../installer'
-require_relative '../binary_repository'
+require_relative '../version_resolver'
 
 module Mnenv
   class VersionCommand < Thor
@@ -68,7 +68,7 @@ module Mnenv
         return
       end
 
-      current_version, current_source = resolve_current
+      current_version, current_source = resolver.resolve
 
       case options[:format]
       when 'json'
@@ -105,6 +105,11 @@ module Mnenv
 
     private
 
+    # Get the shared resolver instance
+    def resolver
+      @resolver ||= VersionResolver.new
+    end
+
     # List installed versions with their sources
     # Uses Paths::INSTALLED_DIR with new naming convention: <version>-<source>
     def list_installed_versions
@@ -129,7 +134,7 @@ module Mnenv
 
     def resolve_version_and_source(version, source, interactive)
       version, source = select_version_interactive if interactive || version.nil?
-      source ||= default_source
+      source ||= resolver.resolve_source
       [version, source]
     end
 
@@ -140,14 +145,12 @@ module Mnenv
       raise 'No versions installed. Run: mnenv install --list' if installed.empty?
 
       choices = installed.flat_map do |version, sources|
-        sources.map do |source|
-          { name: "#{version} (#{source})", value: [version, source] }
+        sources.map do |src|
+          { name: "#{version} (#{src})", value: [version, src] }
         end
       end
 
-      version, source = prompt.select('Select a version:', choices)
-
-      [version, source]
+      prompt.select('Select a version:', choices)
     end
 
     def verify_installed!(version, source)
@@ -159,55 +162,6 @@ module Mnenv
 
     def installed_versions
       list_installed_versions.keys.sort
-    end
-
-    def default_source
-      if File.exist?(Paths::SOURCE_FILE)
-        File.read(Paths::SOURCE_FILE).strip
-      else
-        'gemfile'
-      end
-    end
-
-    def resolve_version
-      return ENV['METANORMA_VERSION'] if ENV['METANORMA_VERSION']
-
-      dir = Dir.pwd
-      loop do
-        return File.read(File.join(dir, '.metanorma-version')).strip if File.exist?(File.join(dir,
-                                                                                              '.metanorma-version'))
-
-        parent = File.dirname(dir)
-        break if parent == dir # Reached root
-
-        dir = parent
-      end
-
-      return File.read(Paths::VERSION_FILE).strip if File.exist?(Paths::VERSION_FILE)
-
-      nil
-    end
-
-    def resolve_source
-      return ENV['METANORMA_SOURCE'] if ENV['METANORMA_SOURCE']
-
-      dir = Dir.pwd
-      loop do
-        return File.read(File.join(dir, '.metanorma-source')).strip if File.exist?(File.join(dir, '.metanorma-source'))
-
-        parent = File.dirname(dir)
-        break if parent == dir # Reached root
-
-        dir = parent
-      end
-
-      return File.read(Paths::SOURCE_FILE).strip if File.exist?(Paths::SOURCE_FILE)
-
-      'gemfile'
-    end
-
-    def resolve_current
-      [resolve_version, resolve_source]
     end
   end
 end
