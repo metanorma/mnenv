@@ -80,6 +80,8 @@ module Mnenv
         # Store relative paths (relative to data/gemfile directory)
         version.gemfile_path = "v#{version.version}/Gemfile"
         version.gemfile_lock_path = "v#{version.version}/Gemfile.lock.archived"
+        # Set parsed_at to now if not already set
+        version.parsed_at = DateTime.now if version.parsed_at.nil?
 
         repository.save(version)
       end
