@@ -8,6 +8,9 @@ require 'uri'
 require 'json'
 require 'fileutils'
 require 'net/http'
+require_relative 'missing_credentials_error'
+require_relative 'snapcraft_not_available_error'
+require_relative 'login_failed_error'
 
 module Mnenv
   module Snap
@@ -24,45 +27,112 @@ module Mnenv
       ARCHITECTURES = %w[amd64 arm64].freeze
 
       def fetch_all
-        # Load existing versions from YAML (single source of truth)
-        existing_map = repository.all.to_h { |v| [snap_key(v), v] }
+        fetch_all_from_snapcraft
+      end
+
+      def fetch_all_from_cache
+        # Load existing versions from YAML
+        version_map = repository.all
 
         # Fetch current heads from snap_metadata API
         current_versions = fetch_current_heads
 
-        # Merge: keep existing, add/update current from API
-        version_map = {}
+        current_versions.each_key do |k|
+          next if repository.exists?(k)
 
-        # Add all existing versions
-        existing_map.each_value { |v| version_map[snap_key(v)] = v }
-
-        # Add/update current from API (overrides existing if same key)
-        current_versions.each do |cv|
-          key = snap_key_hash(cv)
-          version_map[key] = SnapVersion.new(
-            version: cv.fetch('version'),
-            revision: cv.fetch('revision'),
-            arch: cv.fetch('arch'),
-            channel: cv.fetch('channel')
+          # Add new version
+          version_map << SnapVersion.new(
+            version: k,
+            parsed_at: DateTime.now,
+            channels: current_versions[k].map do |cv|
+              SnapChannel.new(
+                name: cv.fetch('channel'),
+                revision: cv.fetch('revision'),
+                arch: cv.fetch('arch')
+              )
+            end
           )
         end
 
-        version_map.values.sort
+        version_map
+      end
+
+      def fetch_all_from_snapcraft
+        raise MissingCredentialsError unless ENV['SNAPCRAFT_STORE_CREDENTIALS']
+        raise SnapcraftNotAvailableError unless snapcraft_available?
+
+        login_result = system('echo "$SNAPCRAFT_STORE_CREDENTIALS" | snapcraft login --with -')
+
+        raise LoginFailedError unless login_result
+
+        # delete the environment variable immediately to prevent
+        # duplicate login error
+        ENV.delete('SNAPCRAFT_STORE_CREDENTIALS')
+
+        result = `snapcraft revisions metanorma`
+        snap_revisions = parse_snap_revisions(result)
+        build_snap_version_map(snap_revisions)
       end
 
       private
 
-      def snap_key(version)
-        "#{version.version}-#{version.revision}-#{version.arch}-#{version.channel}"
+      def snapcraft_available?
+        system('command -v snapcraft > /dev/null 2>&1')
       end
 
-      def snap_key_hash(hash)
-        "#{hash.fetch('version')}-#{hash.fetch('revision')}-#{hash.fetch('arch')}-#{hash.fetch('channel')}"
+      def parse_snap_revisions(data)
+        lines = data.lines.map(&:strip).reject { |l| l.empty? || l.start_with?('Rev.') }
+        revisions = []
+        lines.each do |line|
+          fields = line.split(/\s{2,}/)
+          rev, uploaded, arches, version, channels = fields
+          revisions << {
+            version: version,
+            published_at: uploaded,
+            revision: rev,
+            arch: arches,
+            channels: channels
+          }
+        end
+        revisions
+      end
+
+      def build_snap_version_map(snap_revisions)
+        versions = []
+        latest_version = snap_revisions.first[:version]
+
+        snap_revisions.each do |sr|
+          snap_version = versions.find { |v| v&.version == sr[:version] }
+          if snap_version.nil?
+            snap_version = SnapVersion.new
+            snap_version.version = sr[:version]
+            snap_version.published_at = sr[:published_at]
+            snap_version.parsed_at = DateTime.now
+          end
+
+          channels = sr[:channels].split(',').map(&:strip)
+          channels.each do |channel|
+            next unless channel.start_with? 'latest/'
+
+            channel = channel.sub('latest/', '')
+            next if (sr[:version] == latest_version) && !channel.end_with?('*')
+
+            snap_version.channels << SnapChannel.new(
+              name: channel.gsub('*', ''),
+              revision: sr[:revision],
+              arch: sr[:arch]
+            )
+          end
+
+          versions << snap_version
+        end
+
+        versions.reverse
       end
 
       # Fetch current heads from snap_metadata API for all channel/arch combinations
       def fetch_current_heads
-        versions = []
+        versions = {}
 
         CHANNELS.each do |channel|
           ARCHITECTURES.each do |arch|
@@ -88,8 +158,9 @@ module Mnenv
 
             if data['_embedded'] && data['_embedded']['clickindex:package']
               pkg = data['_embedded']['clickindex:package'][0]
-              versions << {
-                'version' => pkg['version'],
+
+              versions[pkg['version']] ||= []
+              versions[pkg['version']] << {
                 'revision' => pkg['revision'],
                 'arch' => arch,
                 'channel' => channel

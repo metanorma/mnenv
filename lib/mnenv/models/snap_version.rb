@@ -1,29 +1,20 @@
 # frozen_string_literal: true
 
 require_relative 'version'
+require_relative 'snap_channel'
 
 module Mnenv
   class SnapVersion < ArtifactVersion
-    attribute :revision, :integer
-    attribute :arch, :string, default: 'amd64'
-    attribute :channel, :string, default: 'stable'
+    attribute :channels, ::Mnenv::SnapChannel,
+              collection: true, default: -> { [] }
 
     key_value do
-      map 'version', to: :version
-      map 'published_at', to: :published_at
-      map 'parsed_at', to: :parsed_at
-      map 'revision', to: :revision
-      map 'arch', to: :arch
-      map 'channel', to: :channel
+      map 'channels', to: :channels
     end
-
-    def display_name = revision ? "#{version}-#{revision}" : "v#{version}"
 
     def to_hash
       super.merge(
-        'revision' => revision,
-        'arch' => arch,
-        'channel' => channel
+        'channels' => channels.map(&:to_hash)
       )
     end
   end
