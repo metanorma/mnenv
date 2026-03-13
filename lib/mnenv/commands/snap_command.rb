@@ -28,17 +28,9 @@ module Mnenv
     desc 'refresh', 'Fetch and add new Snap versions (incremental)'
     def refresh
       fetcher = Snap::Fetcher.new
-      repo = fetcher.repository
-
-      # Build map of existing composite keys
-      existing_keys = repo.all.map { |v| "#{v.version}-#{v.revision}-#{v.arch}-#{v.channel}" }
+      existing = fetcher.repository.all.map(&:version)
       remote_versions = fetcher.fetch_all
-
-      # Find truly new versions (composite key doesn't exist)
-      new_versions = remote_versions.reject do |v|
-        key = "#{v.version}-#{v.revision}-#{v.arch}-#{v.channel}"
-        existing_keys.include?(key)
-      end
+      new_versions = remote_versions.reject { |v| existing.include?(v.version) }
 
       if new_versions.empty?
         puts 'No new Snap versions found'
@@ -55,22 +47,21 @@ module Mnenv
       puts "Revamped #{versions.size} Snap versions"
     end
 
-    desc 'update VERSION', 'Update a specific Snap version (all arch/channel combinations)'
+    desc 'update VERSION', 'Update a specific Snap version'
     def update(version)
       fetcher = Snap::Fetcher.new
       versions = fetcher.fetch_all
-      targets = versions.select { |v| v.version == version }
+      target = versions.find { |v| v.version == version }
 
-      if targets.empty?
-        puts "Snap version #{version} not found in current channel-map"
-        puts 'Note: Historical versions no longer in Snap API cannot be updated'
+      if target.nil?
+        puts "Snap version #{version} not found"
         exit 1
       end
 
-      fetcher.repository.save_all(targets)
-      puts "Updated #{targets.size} Snap entries for version #{version}:"
-      targets.each do |v|
-        puts "  - #{v.arch}/#{v.channel}: revision #{v.revision}"
+      fetcher.repository.save_all([target])
+      puts "Updated 1 Snap entry for version #{version}:"
+      target.channels.each do |v|
+        puts "  - channel: #{v.name} arch: #{v.arch} revision: #{v.revision}"
       end
     end
 

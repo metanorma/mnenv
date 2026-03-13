@@ -62,7 +62,7 @@ module Mnenv
       end
     end
 
-    # Override in subclasses for custom caching (e.g., SnapRepository uses composite keys)
+    # Override in subclasses for custom caching
     def cache_version(version)
       @versions_cache[version.version] = version
     end
