@@ -28,7 +28,14 @@ module Mnenv
     end
 
     def data_dir
-      @data_dir ||= File.join(self.class.versions_manager.data_path, 'gemfile')
+      @data_dir ||= begin
+        base_dir = if defined?(Mnenv::Cli) && Mnenv::Cli.data_dir
+                     Mnenv::Cli.data_dir
+                   else
+                     self.class.versions_manager.data_path
+                   end
+        File.join(base_dir, 'gemfile')
+      end
     end
 
     def directory_path = File.join(data_dir, "v#{version}")
