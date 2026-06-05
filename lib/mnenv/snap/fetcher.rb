@@ -61,13 +61,13 @@ module Mnenv
         raise MissingCredentialsError unless ENV['SNAPCRAFT_STORE_CREDENTIALS']
         raise SnapcraftNotAvailableError unless snapcraft_available?
 
-        login_result = system('echo "$SNAPCRAFT_STORE_CREDENTIALS" | snapcraft login --with -')
-
-        raise LoginFailedError unless login_result
-
-        # delete the environment variable immediately to prevent
-        # duplicate login error
-        ENV.delete('SNAPCRAFT_STORE_CREDENTIALS')
+        # No need to login if credentials are not provided,
+        # as snapcraft will use cached credentials if available
+        # login_result = system('echo "$SNAPCRAFT_STORE_CREDENTIALS" | snapcraft login --with -')
+        # raise LoginFailedError unless login_result
+        # # delete the environment variable immediately to prevent
+        # # duplicate login error
+        # ENV.delete('SNAPCRAFT_STORE_CREDENTIALS')
 
         result = `snapcraft revisions metanorma`
         snap_revisions = parse_snap_revisions(result)
