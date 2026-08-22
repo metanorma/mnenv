@@ -4,6 +4,7 @@ require 'lutaml/model'
 
 module Mnenv
   autoload :ArtifactVersion, 'mnenv/models/version'
+  autoload :ReleaseProvenance, 'mnenv/models/release_provenance'
   autoload :GemfileVersion, 'mnenv/models/gemfile_version'
   autoload :SnapVersion, 'mnenv/models/snap_version'
   autoload :HomebrewVersion, 'mnenv/models/homebrew_version'

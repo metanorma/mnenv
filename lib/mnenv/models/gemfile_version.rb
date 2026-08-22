@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'version'
+require_relative 'release_provenance'
 require_relative '../versions_manager'
 
 module Mnenv
@@ -8,6 +9,10 @@ module Mnenv
     attribute :gemfile_exists, :boolean, default: false
     attribute :gemfile_path, :string
     attribute :gemfile_lock_path, :string
+    # Optional provenance (metanorma/ci#367) — parsed and re-emitted so the
+    # daily refresh round-trips instead of dropping them.
+    attribute :rubygems_created_at, :date_time
+    attribute :release_provenance, ReleaseProvenance
 
     # Class-level versions manager for dependency injection in tests
     class << self
@@ -25,6 +30,8 @@ module Mnenv
       map 'gemfile_exists', to: :gemfile_exists
       map 'gemfile_path', to: :gemfile_path
       map 'gemfile_lock_path', to: :gemfile_lock_path
+      map 'rubygems_created_at', to: :rubygems_created_at
+      map 'release_provenance', to: :release_provenance
     end
 
     def data_dir
@@ -51,11 +58,14 @@ module Mnenv
     end
 
     def to_hash
-      super.merge(
+      h = super.merge(
         'gemfile_exists' => gemfile_exists,
         'gemfile_path' => gemfile_path,
         'gemfile_lock_path' => gemfile_lock_path
       )
+      h['rubygems_created_at'] = format_timestamp(rubygems_created_at) if rubygems_created_at
+      h['release_provenance'] = release_provenance.to_hash if release_provenance
+      h
     end
   end
 end
