@@ -1,10 +1,5 @@
 name: release
 
-permissions:
-  contents: write
-  packages: write
-  id-token: write
-
 on:
   workflow_dispatch:
     inputs:
@@ -16,11 +11,24 @@ on:
         default: 'skip'
   repository_dispatch:
     types: [ do-release ]
+  # The publish leg: when the release PR (head branch release/v*) merges,
+  # metanorma/ci tags the merge commit and publishes (metanorma/ci#515).
+  # Ordinary PR closes are skipped inside the reusable workflow.
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
 
 jobs:
   release:
-    uses: relaton/support/.github/workflows/release.yml@main
+    uses: metanorma/ci/.github/workflows/rubygems-release.yml@main
     with:
       next_version: ${{ github.event.inputs.next_version }}
     secrets:
+      # Trusted Publishing (OIDC) is the preferred publish path; when the
+      # rubygems-api-key secret is absent the reusable falls through to it.
       rubygems-api-key: ${{ secrets.METANORMA_CI_RUBYGEMS_API_KEY }}
